@@ -1,0 +1,67 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Videos{% endblock %}
+{% block topbar_title %}Videos{% endblock %}
+
+{% block content %}
+<div class="t-wrap">
+  <div class="t-head">
+    <div class="t-head-title">All Videos ({{ videos | length }})</div>
+    <a href="{{ url_for('admin.video_new') }}" class="btn-new">+ Add Video</a>
+  </div>
+  {% if videos %}
+  <table>
+    <thead>
+      <tr><th>Title</th><th>Platform</th><th>Category</th><th>Duration</th><th>Featured</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for v in videos %}
+      <tr>
+        <td>
+          <div class="td-title">{{ v.title }}</div>
+          <div class="td-muted" style="font-size:12px">{{ v.slug }}</div>
+        </td>
+        <td>
+          <span class="tag-pill {{ 'tag-v' if v.platform=='youtube' else 'tag-p' if v.platform=='vimeo' else 'tag-c' }}">
+            {{ v.platform | upper }}
+          </span>
+        </td>
+        <td><span class="tag-pill tag-g">{{ v.category | replace('-',' ') }}</span></td>
+        <td class="td-muted">{{ v.duration or '—' }}</td>
+        <td>{{ '★' if v.featured else '—' }}</td>
+        <td>
+          <span class="status-dot {{ 'dot-on' if v.published else 'dot-off' }}"></span>
+          <span id="pub-v-{{ v.id }}">{{ 'Live' if v.published else 'Draft' }}</span>
+        </td>
+        <td>
+          <div class="act-btns">
+            <a href="{{ url_for('admin.video_edit', vid=v.id) }}" class="act-btn ab-edit">Edit</a>
+            <button class="act-btn ab-pub" onclick="togglePub('video','{{ v.id }}')">Toggle</button>
+            <form class="del-form" method="POST" action="{{ url_for('admin.video_delete', vid=v.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="act-btn ab-del confirm-del">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">▶</div>
+    <p>No videos yet. Paste a YouTube or Vimeo link to get started!</p>
+    <a href="{{ url_for('admin.video_new') }}" class="btn-new">+ Add First Video</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+function togglePub(type,id){
+  fetch('/admin/'+type+'s/'+id+'/toggle',{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token() }}','Content-Type':'application/json'}})
+  .then(r=>r.json()).then(d=>{
+    var el=document.getElementById('pub-v-'+id);
+    if(el) el.textContent=d.published?'Live':'Draft';
+  });
+}
+{% endblock %}

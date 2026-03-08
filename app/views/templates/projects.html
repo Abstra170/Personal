@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+
+{% block extra_head %}
+<style>
+.page-hero{padding:100px 60px 60px;background:var(--surface)}
+.page-hero h1{font-size:clamp(48px,7vw,96px);font-weight:800;letter-spacing:-0.04em;line-height:.9}
+.page-hero p{font-size:17px;color:var(--mu);margin-top:16px;max-width:500px;letter-spacing:-0.01em}
+.projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.p-card{background:var(--surface);border:1px solid var(--bd2);border-radius:12px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;display:flex;flex-direction:column}
+.p-card:hover{transform:translateY(-5px);box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.p-card-thumb{aspect-ratio:16/9;overflow:hidden;background:var(--surface2)}
+.p-card-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.p-card:hover .p-card-thumb img{transform:scale(1.05)}
+.p-card-thumb .no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--mu)}
+.p-card-body{padding:20px;flex:1;display:flex;flex-direction:column}
+.p-card-tag{font-size:11px;font-weight:600;color:var(--c);margin-bottom:7px;letter-spacing:.01em;text-transform:uppercase}
+.p-card-title{font-size:19px;font-weight:700;letter-spacing:-0.03em;color:var(--txt);margin-bottom:8px;line-height:1.2}
+.p-card-desc{font-size:14px;color:var(--mu);line-height:1.65;letter-spacing:-0.01em;margin-bottom:14px;flex:1}
+.p-card-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.p-pill{padding:4px 10px;border:1px solid var(--bd);border-radius:980px;font-size:11px;font-weight:500;color:var(--mu)}
+.p-card-links{display:flex;gap:12px;margin-top:auto}
+.p-lnk{font-size:13px;font-weight:600;color:var(--c);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:gap .2s}
+.p-lnk:hover{gap:8px}
+.p-lnk.gh{color:var(--mu)}.p-lnk::after{content:'↗'}
+.hidden{display:none}
+@media(max-width:900px){.projects-grid{grid-template-columns:1fr}.page-hero{padding:80px 22px 40px}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="sec-eye rv">selected_work[]</div>
+  <h1 class="rv">Coding <span style="color:var(--c)">Projects</span></h1>
+  <p class="rv">Full-stack apps, WebGL experiments, open source tools, and more.</p>
+</div>
+
+<section class="sec" style="padding-top:40px">
+  <!-- Filter bar -->
+  {% if categories %}
+  <div class="filter-bar rv">
+    <button class="f-pill active" data-cat="all">All</button>
+    {% for cat in categories %}
+    <button class="f-pill" data-cat="{{ cat }}">{{ cat | title }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if projects %}
+  <div class="projects-grid">
+    {% for p in projects %}
+    <div class="p-card rv" data-cat="{{ p.category }}">
+      <div class="p-card-thumb">
+        {% if p.thumbnail_url %}
+        <img src="{{ p.thumbnail_url }}" alt="{{ p.title }}" loading="lazy">
+        {% else %}
+        <div class="no-img">⬡</div>
+        {% endif %}
+      </div>
+      <div class="p-card-body">
+        <div class="p-card-tag">{{ p.category }}</div>
+        <div class="p-card-title">{{ p.title }}</div>
+        <div class="p-card-desc">{{ p.short_desc or p.description | truncate(120) }}</div>
+        {% if p.tech_list %}
+        <div class="p-card-pills">
+          {% for tech in p.tech_list[:4] %}<span class="p-pill">{{ tech }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        <div class="p-card-links">
+          <a href="{{ url_for('public.project_detail', slug=p.slug) }}" class="p-lnk">Details</a>
+          {% if p.live_url %}<a href="{{ p.live_url }}" target="_blank" class="p-lnk">Live</a>{% endif %}
+          {% if p.github_url %}<a href="{{ p.github_url }}" target="_blank" class="p-lnk gh">GitHub</a>{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:80px 0;color:var(--mu)">
+    <div style="font-size:48px;margin-bottom:16px">⬡</div>
+    <p style="font-size:17px">No projects yet — add some via the <a href="{{ url_for('admin.dashboard') }}" style="color:var(--c)">admin panel</a>.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+// Category filter
+document.querySelectorAll('.f-pill').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.f-pill').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    var cat=btn.dataset.cat;
+    document.querySelectorAll('.p-card').forEach(function(c){
+      c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
+    });
+  });
+});
+{% endblock %}

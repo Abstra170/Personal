@@ -1,0 +1,239 @@
+<style>
+.about-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 120px 24px 0;
+  background: var(--bg);
+  color: var(--txt);
+  overflow: hidden;
+}
+
+.about-page::before {
+  content: "Bibek";
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(110px, 22vw, 280px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  color: rgba(255,255,255,.03);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 0;
+}
+[data-theme="light"] .about-page::before { color: rgba(255,59,122,.06); }
+
+.about-wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.about-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  min-height: 82vh;
+}
+
+.about-copy { max-width: 520px; }
+.about-mini { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--txt2); }
+.about-name { font-size: clamp(22px, 2.6vw, 36px); font-weight: 800; color: var(--c2); margin-bottom: 12px; }
+
+.about-title {
+  font-size: clamp(56px, 8.5vw, 115px);
+  line-height: .88;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  margin-bottom: 24px;
+}
+.about-title .dot { color: var(--c2); }
+.about-desc { font-size: 16px; line-height: 1.8; color: var(--txt2); max-width: 440px; margin-bottom: 28px; }
+
+.about-socials { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+.about-socials a {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none; background: var(--surface); border: 1px solid var(--bd2);
+  color: var(--txt); transition: .3s ease;
+}
+.about-socials a:hover {
+  transform: translateY(-4px); color: #fff;
+  background: var(--c2); border-color: var(--c2);
+  box-shadow: 0 12px 24px rgba(255,59,122,.25);
+}
+.about-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 14px 28px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--c2), #ff6b57);
+  color: #fff; text-decoration: none; font-weight: 700; font-size: 16px;
+  box-shadow: 0 14px 30px rgba(255,59,122,.28); transition: .3s ease;
+}
+.about-btn:hover { transform: translateY(-4px); color: #fff; }
+
+.about-visual {
+  position: relative;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-blob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -25%);
+  width: 370px;
+  height: 370px;
+  background: linear-gradient(135deg, var(--c2), #ff7b5f);
+  border-radius: 62% 38% 46% 54% / 60% 44% 56% 40%;
+  animation: blobMorph 8s ease-in-out infinite;
+  filter: drop-shadow(0 18px 50px rgba(255,59,122,.35));
+  z-index: 1;
+}
+
+@keyframes blobMorph {
+  0%,100% { border-radius: 62% 38% 46% 54% / 60% 44% 56% 40%; }
+  25%      { border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%; }
+  50%      { border-radius: 46% 54% 60% 40% / 44% 36% 64% 56%; }
+  75%      { border-radius: 56% 44% 48% 52% / 64% 52% 48% 36%; }
+}
+
+.about-photo {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 410px;
+  height: 565px;
+  z-index: 2;
+  background: transparent;
+}
+
+.about-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top center;
+  display: block;
+  background: transparent;
+  mix-blend-mode: normal;
+  filter: none;
+}
+
+.about-line {
+  position: absolute;
+  bottom: 55px;
+  left: 5px;
+  width: 230px;
+  height: 75px;
+  z-index: 3;
+  opacity: .9;
+  pointer-events: none;
+}
+.about-line svg { width: 100%; height: 100%; }
+.about-line path {
+  fill: none; stroke: var(--c2);
+  stroke-width: 2.5; stroke-dasharray: 8 10; stroke-linecap: round;
+}
+
+.about-bottom { margin-top: 20px; padding: 40px 0 90px; }
+.about-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.about-card {
+  background: var(--surface); border: 1px solid var(--bd2);
+  border-radius: 24px; padding: 28px; transition: .35s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,.04);
+}
+.about-card:hover { transform: translateY(-8px); box-shadow: 0 18px 38px rgba(0,0,0,.08); }
+.about-card h3 { font-size: 28px; margin-bottom: 14px; letter-spacing: -0.03em; }
+.about-card p, .about-card li { color: var(--txt2); line-height: 1.8; font-size: 15px; }
+.about-card ul { margin: 0; padding-left: 18px; }
+.about-card li { margin-bottom: 8px; }
+
+.reveal { opacity: 0; transform: translateY(45px); transition: opacity .8s ease, transform .8s ease; }
+.reveal.show { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 980px) {
+  .about-hero { grid-template-columns: 1fr; text-align: center; min-height: auto; gap: 20px; }
+  .about-copy { max-width: 680px; margin: 0 auto; }
+  .about-desc { margin: 0 auto 28px; }
+  .about-socials { justify-content: center; }
+  .about-visual { height: 420px; }
+  .about-blob { width: 260px; height: 260px; }
+  .about-photo { width: 270px; height: 370px; top: 5px; }
+  .about-line { display: none; }
+  .about-card-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 576px) {
+  .about-page { padding: 100px 18px 0; }
+  .about-title { font-size: 58px; }
+  .about-name { font-size: 22px; }
+  .about-card { padding: 22px; }
+  .about-blob { width: 210px; height: 210px; }
+  .about-photo { width: 220px; height: 300px; }
+}
+</style>
+
+<section class="about-page">
+  <div class="about-wrap">
+    <div class="about-hero">
+
+      <div class="about-copy reveal">
+        <div class="about-mini">Hello! I'm</div>
+        <div class="about-name">Bibek Bohara</div>
+        <h1 class="about-title">Creative<br>Developer<span class="dot">.</span></h1>
+        <p class="about-desc">
+          I build modern websites and create visual content that feels clean,
+          bold, and engaging. I enjoy mixing coding with creativity to make
+          digital experiences that look premium and work smoothly.
+        </p>
+<!--        <div class="about-socials">-->
+<!--          <a href="#"><i class="fab fa-facebook-f"></i></a>-->
+<!--          <a href="#"><i class="fab fa-instagram"></i></a>-->
+<!--          <a href="#"><i class="fab fa-twitter"></i></a>-->
+<!--          <a href="#"><i class="fab fa-linkedin-in"></i></a>-->
+<!--        </div>-->
+        <a href="{{ url_for('public.about') }}" class="about-btn">Hire Me</a>
+      </div>
+
+      <div class="about-visual reveal">
+        <div class="about-blob"></div>
+        <div class="about-photo">
+          <img
+            src="{{ url_for('static', filename='photo/WhatsApp_Image_2026-03-08_at_4.44.43_PM-removebg-preview.png') }}"
+            alt="Bibek Bohara"
+          >
+        </div>
+        <div class="about-line">
+          <svg viewBox="0 0 230 75" preserveAspectRatio="none">
+            <path d="M5 55 C 30 5, 65 70, 110 38 S 185 5, 225 48"></path>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+
+
+  </div>
+</section>
+
+<script>
+(function () {
+  const reveals = document.querySelectorAll(".reveal");
+  function showOnScroll() {
+    const trigger = window.innerHeight * 0.88;
+    reveals.forEach(el => {
+      if (el.getBoundingClientRect().top < trigger) el.classList.add("show");
+    });
+  }
+  showOnScroll();
+  window.addEventListener("scroll", showOnScroll);
+})();
+</script>

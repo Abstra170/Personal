@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ video.title }}{% endblock %}
+{% block content %}
+<section class="sec" style="padding-top:120px;max-width:900px;margin:0 auto">
+  <div class="sec-eye rv">{{ video.category | replace('-',' ') }}</div>
+  <h1 class="rv" style="font-size:clamp(40px,6vw,80px);font-weight:800;letter-spacing:-0.04em;line-height:.92;margin-bottom:20px">{{ video.title }}</h1>
+  <div class="rv" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px">
+    <span style="padding:5px 12px;background:rgba(255,55,95,.1);border:1px solid rgba(255,55,95,.25);border-radius:980px;font-size:12px;font-weight:600;color:var(--c2)">{{ video.platform | upper }}</span>
+    {% if video.duration %}<span style="padding:5px 12px;border:1px solid var(--bd);border-radius:980px;font-size:12px;color:var(--mu)">{{ video.duration }}</span>{% endif %}
+    {% for tool in video.tools_list %}<span style="padding:5px 12px;border:1px solid var(--bd);border-radius:980px;font-size:12px;color:var(--mu)">{{ tool }}</span>{% endfor %}
+  </div>
+
+  <!-- Embed or thumbnail -->
+  {% if video.platform in ['youtube','vimeo'] and video.embed_id %}
+  <div class="rv" style="border-radius:16px;overflow:hidden;margin-bottom:36px;position:relative;padding-top:56.25%;background:#000">
+    <iframe src="{{ video.embed_url }}" style="position:absolute;inset:0;width:100%;height:100%;border:none" allow="autoplay;encrypted-media" allowfullscreen></iframe>
+  </div>
+  {% elif video.thumbnail_url %}
+  <div class="rv" style="border-radius:16px;overflow:hidden;margin-bottom:36px;aspect-ratio:16/9;position:relative;cursor:pointer" onclick="openVideo('{{ video.embed_url }}')">
+    <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" style="width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center">
+      <div style="width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff">▶</div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if video.description or video.short_desc %}
+  <div class="rv" style="font-size:17px;color:var(--txt2);line-height:1.75;letter-spacing:-0.01em;margin-bottom:36px">{{ video.description or video.short_desc }}</div>
+  {% endif %}
+
+  <div class="rv" style="display:flex;gap:12px;flex-wrap:wrap">
+    {% if video.video_url %}<a href="{{ video.video_url }}" target="_blank" class="btn btn-p">Watch on {{ video.platform | title }} ↗</a>{% endif %}
+    <a href="{{ url_for('public.videos') }}" class="btn btn-s">← All Videos</a>
+  </div>
+</section>
+
+{% if related %}
+<section class="sec" style="background:var(--surface)">
+  <h2 style="font-size:24px;font-weight:700;letter-spacing:-0.03em;margin-bottom:24px">More Videos</h2>
+  <div class="grid-3">
+    {% for v in related %}
+    <div class="card rv" style="cursor:pointer" onclick="openVideo('{{ v.embed_url }}')">
+      {% if v.thumbnail_url %}
+      <div class="card-thumb-wrap"><img src="{{ v.thumbnail_url }}" alt="{{ v.title }}" loading="lazy"></div>
+      {% endif %}
+      <div class="card-body">
+        <div class="card-tag" style="color:var(--c2)">{{ v.category | replace('-',' ') }}</div>
+        <div class="card-title">{{ v.title }}</div>
+        {% if v.duration %}<div class="card-desc">{{ v.duration }}</div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

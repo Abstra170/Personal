@@ -1,0 +1,94 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block topbar_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Total Projects</div>
+    <div class="stat-val c">{{ total_projects }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Videos</div>
+    <div class="stat-val v">{{ total_videos }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Published</div>
+    <div class="stat-val g">{{ total_projects + total_videos }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Admin</div>
+    <div class="stat-val p" style="font-size:20px;padding-top:6px">{{ current_user.username }}</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <!-- Recent Projects -->
+  <div class="t-wrap">
+    <div class="t-head">
+      <div class="t-head-title">Recent Projects</div>
+      <a href="{{ url_for('admin.project_new') }}" class="btn-new">+ Add Project</a>
+    </div>
+    {% if recent_projects %}
+    <table>
+      <thead><tr><th>Title</th><th>Category</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in recent_projects %}
+        <tr>
+          <td><a href="{{ url_for('admin.project_edit', pid=p.id) }}" class="td-title" style="text-decoration:none;color:var(--txt)">{{ p.title }}</a></td>
+          <td><span class="tag-pill tag-c">{{ p.category }}</span></td>
+          <td><span class="status-dot {{ 'dot-on' if p.published else 'dot-off' }}"></span>{{ 'Live' if p.published else 'Draft' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><div class="icon">⬡</div><p>No projects yet</p><a href="{{ url_for('admin.project_new') }}" class="btn-new">+ Add First Project</a></div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Videos -->
+  <div class="t-wrap">
+    <div class="t-head">
+      <div class="t-head-title">Recent Videos</div>
+      <a href="{{ url_for('admin.video_new') }}" class="btn-new">+ Add Video</a>
+    </div>
+    {% if recent_videos %}
+    <table>
+      <thead><tr><th>Title</th><th>Platform</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for v in recent_videos %}
+        <tr>
+          <td><a href="{{ url_for('admin.video_edit', vid=v.id) }}" class="td-title" style="text-decoration:none;color:var(--txt)">{{ v.title }}</a></td>
+          <td><span class="tag-pill tag-v">{{ v.platform }}</span></td>
+          <td><span class="status-dot {{ 'dot-on' if v.published else 'dot-off' }}"></span>{{ 'Live' if v.published else 'Draft' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><div class="icon">▶</div><p>No videos yet</p><a href="{{ url_for('admin.video_new') }}" class="btn-new">+ Add First Video</a></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+<!-- Security status bar (appended) -->
+<div style="margin-top:20px;background:var(--surface);border:1px solid var(--bd2);border-radius:12px;padding:18px 22px;display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+  <div style="font-size:12px;font-weight:600;color:var(--mu);letter-spacing:.05em;text-transform:uppercase">Security</div>
+  <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+    <span style="width:7px;height:7px;border-radius:50%;background:{{ '#32d74b' if totp_active else '#ff375f' }};display:inline-block"></span>
+    2FA: <strong style="color:{{ 'var(--g)' if totp_active else 'var(--c2)' }}">{{ 'Active' if totp_active else 'Disabled' }}</strong>
+  </div>
+  <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+    <span style="width:7px;height:7px;border-radius:50%;background:var(--c);display:inline-block"></span>
+    Your IP: <code style="font-family:SF Mono,Menlo,monospace;font-size:11px;background:var(--surface2);padding:2px 7px;border-radius:5px">{{ client_ip }}</code>
+  </div>
+  <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+    <span style="width:7px;height:7px;border-radius:50%;background:var(--g);display:inline-block"></span>
+    Session secured · CSRF active
+  </div>
+  {% if not totp_active %}
+  <a href="{{ url_for('admin.settings') }}" style="margin-left:auto;font-size:12px;color:var(--c2);text-decoration:none;font-weight:600">⚠️ Enable 2FA →</a>
+  {% endif %}
+</div>

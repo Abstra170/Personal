@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+
+{# ── HERO ── #}
+{% include 'component/about_hero.html' %}
+
+{# ── ABOUT SECTIONS ── #}
+<div class="ab-page">
+
+  <!-- ══ ABOUT ME ══ -->
+  <section class="ab-section ab-me reveal-up">
+    <div class="ab-wrap">
+
+      <div class="ab-label">
+        <span class="ab-label-line"></span>
+        <span>About Me</span>
+      </div>
+
+      <div class="ab-me-body">
+        <div class="ab-me-left">
+          <h2 class="ab-big-title">
+            I craft digital<br>
+            experiences that<br>
+            <em>feel alive</em><span class="ab-accent">.</span>
+          </h2>
+        </div>
+
+        <div class="ab-me-right">
+          <p class="ab-lead">
+            I'm <strong>Bibek Bohara</strong> — a creative developer based in Nepal
+            who lives at the intersection of clean code and bold design.
+          </p>
+          <p class="ab-body">
+            My journey started with curiosity: why do some websites feel electric
+            while others feel dead? That question drove me to obsessively study
+            both sides — the technical craft of building and the visual art of
+            designing. Today I build things that are fast, modern, and
+            impossible to ignore.
+          </p>
+          <p class="ab-body">
+            I don't just write code — I tell stories through screens. Whether
+            it's a portfolio, a web app, or a cinematic video edit, I bring the
+            same energy: intention, precision, and a relentless eye for detail.
+          </p>
+
+          <div class="ab-stats">
+            <div class="ab-stat">
+              <span class="ab-stat-num">2+</span>
+              <span class="ab-stat-lbl">Years building</span>
+            </div>
+            <div class="ab-stat">
+              <span class="ab-stat-num">15+</span>
+              <span class="ab-stat-lbl">Projects shipped</span>
+            </div>
+            <div class="ab-stat">
+              <span class="ab-stat-num">∞</span>
+              <span class="ab-stat-lbl">Ideas in queue</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ QUALIFICATION ══ -->
+  <section class="ab-section ab-qual reveal-up">
+    <div class="ab-wrap">
+
+      <div class="ab-label">
+        <span class="ab-label-line"></span>
+        <span>Qualification</span>
+      </div>
+
+      <div class="ab-qual-body">
+
+        <h2 class="ab-big-title ab-qual-title">
+          Skills I've<br>sharpened<span class="ab-accent">.</span>
+        </h2>
+
+        <div class="ab-qual-list">
+
+          <div class="ab-qual-item reveal-up" style="--delay:.04s">
+            <div class="ab-qual-num">01</div>
+            <div class="ab-qual-content">
+              <h3>HTML, CSS &amp; JavaScript</h3>
+              <p>Pixel-perfect responsive layouts, smooth animations, and modern
+              ES6+ patterns. I treat the browser as a canvas.</p>
+            </div>
+            <div class="ab-qual-tags">
+              <span>Flexbox</span><span>Grid</span><span>Animations</span><span>ES6+</span>
+            </div>
+          </div>
+
+          <div class="ab-qual-item reveal-up" style="--delay:.1s">
+            <div class="ab-qual-num">02</div>
+            <div class="ab-qual-content">
+              <h3>Python &amp; Flask</h3>
+              <p>Backend APIs, Jinja2 templating, authentication systems, and
+              REST integrations. The engine behind the visuals.</p>
+            </div>
+            <div class="ab-qual-tags">
+              <span>Flask</span><span>Jinja2</span><span>REST API</span><span>SQLAlchemy</span>
+            </div>
+          </div>
+
+          <div class="ab-qual-item reveal-up" style="--delay:.16s">
+            <div class="ab-qual-num">03</div>
+            <div class="ab-qual-content">
+              <h3>PHP &amp; MySQL</h3>
+              <p>Dynamic content, database-driven websites, and CRUD systems.
+              Where data meets presentation.</p>
+            </div>
+            <div class="ab-qual-tags">
+              <span>PHP</span><span>MySQL</span><span>CRUD</span><span>Sessions</span>
+            </div>
+          </div>
+
+          <div class="ab-qual-item reveal-up" style="--delay:.22s">
+            <div class="ab-qual-num">04</div>
+            <div class="ab-qual-content">
+              <h3>Video Editing &amp; Motion</h3>
+              <p>Cinematic storytelling through video — colour grading, transitions,
+              and visual effects that match the mood.</p>
+            </div>
+            <div class="ab-qual-tags">
+              <span>Premiere Pro</span><span>After Effects</span><span>Colour Grading</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ HOBBIES ══ -->
+  <section class="ab-section ab-hobbies reveal-up">
+    <div class="ab-wrap">
+
+      <div class="ab-label">
+        <span class="ab-label-line"></span>
+        <span>Hobbies</span>
+      </div>
+
+      <div class="ab-hobbies-body">
+
+        <h2 class="ab-big-title">
+          What I do<br>for fun<span class="ab-accent">.</span>
+        </h2>
+
+        <div class="ab-hobbies-list">
+
+          <div class="ab-hobby-row reveal-up" style="--delay:.05s">
+            <div class="ab-hobby-icon-wrap">
+              <i class="fas fa-film"></i>
+            </div>
+            <div class="ab-hobby-text">
+              <h3>Video Editing</h3>
+              <p>I live for the cut. Turning raw footage into a story with
+              rhythm, colour, and emotion is my version of meditation.</p>
+            </div>
+            <div class="ab-hobby-num">01</div>
+          </div>
+
+          <div class="ab-hobby-row reveal-up" style="--delay:.11s">
+            <div class="ab-hobby-icon-wrap">
+              <i class="fas fa-palette"></i>
+            </div>
+            <div class="ab-hobby-text">
+              <h3>UI / Web Design</h3>
+              <p>I sketch interfaces in my head before I sleep. Obsessed with
+              typography, spacing, and the tiny details nobody notices — but
+              everybody feels.</p>
+            </div>
+            <div class="ab-hobby-num">02</div>
+          </div>
+
+          <div class="ab-hobby-row reveal-up" style="--delay:.17s">
+            <div class="ab-hobby-icon-wrap">
+              <i class="fas fa-microchip"></i>
+            </div>
+            <div class="ab-hobby-text">
+              <h3>Exploring New Tech</h3>
+              <p>AI, developer tools, new frameworks — if it's new and exciting
+              I'm already tabs deep reading about it at 2am.</p>
+            </div>
+            <div class="ab-hobby-num">03</div>
+          </div>
+
+          <div class="ab-hobby-row reveal-up" style="--delay:.23s">
+            <div class="ab-hobby-icon-wrap">
+              <i class="fas fa-camera"></i>
+            </div>
+            <div class="ab-hobby-text">
+              <h3>Photography</h3>
+              <p>Finding compositions in ordinary moments. The camera taught me
+              to see light and framing — skills that now live in every design
+              I make.</p>
+            </div>
+            <div class="ab-hobby-num">04</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<style>
+/* ══════════════════════════════════════════
+   ABOUT PAGE — PREMIUM LAYOUT
+══════════════════════════════════════════ */
+
+.ab-page {
+  background: var(--bg);
+  color: var(--txt);
+}
+
+.ab-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Section base ── */
+.ab-section {
+  padding: 100px 0;
+  border-top: 1px solid var(--bd2);
+  position: relative;
+}
+
+/* ── Label ── */
+.ab-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--c2);
+  margin-bottom: 52px;
+}
+
+.ab-label-line {
+  display: block;
+  width: 36px;
+  height: 2px;
+  background: var(--c2);
+  border-radius: 99px;
+}
+
+/* ── Big title ── */
+.ab-big-title {
+  font-size: clamp(38px, 5.5vw, 72px);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: .95;
+  color: var(--txt);
+}
+
+.ab-big-title em {
+  font-style: italic;
+  color: var(--c2);
+}
+
+.ab-accent { color: var(--c2); }
+
+/* ══════════════════
+   ABOUT ME
+══════════════════ */
+.ab-me-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.ab-lead {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--txt);
+  font-weight: 500;
+  margin-bottom: 22px;
+}
+
+.ab-lead strong { color: var(--c2); }
+
+.ab-body {
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--txt2);
+  margin-bottom: 20px;
+}
+
+/* Stats row */
+.ab-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 40px;
+  padding-top: 36px;
+  border-top: 1px solid var(--bd2);
+}
+
+.ab-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ab-stat-num {
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--c2);
+  line-height: 1;
+}
+
+.ab-stat-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--txt2);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ══════════════════
+   QUALIFICATION
+══════════════════ */
+.ab-qual-body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.ab-qual-title { position: sticky; top: 120px; }
+
+.ab-qual-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ab-qual-item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 28px;
+  align-items: start;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--bd2);
+  transition: background .3s ease;
+  position: relative;
+}
+
+.ab-qual-item::before {
+  content: '';
+  position: absolute;
+  left: -24px; right: -24px;
+  top: 0; bottom: 0;
+  background: rgba(255,59,122,.04);
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+
+.ab-qual-item:hover::before { opacity: 1; }
+
+.ab-qual-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c2);
+  letter-spacing: .06em;
+  padding-top: 5px;
+  opacity: .6;
+}
+
+.ab-qual-content h3 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--txt);
+  margin-bottom: 8px;
+}
+
+.ab-qual-content p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--txt2);
+}
+
+.ab-qual-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  max-width: 200px;
+  padding-top: 4px;
+}
+
+.ab-qual-tags span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--c2);
+  background: rgba(255,59,122,.08);
+  border: 1px solid rgba(255,59,122,.18);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* ══════════════════
+   HOBBIES
+══════════════════ */
+.ab-hobbies-body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.ab-hobbies-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ab-hobby-row {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  gap: 28px;
+  align-items: start;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--bd2);
+  position: relative;
+  transition: .3s ease;
+}
+
+.ab-hobby-row::before {
+  content: '';
+  position: absolute;
+  left: -24px; right: -24px;
+  top: 0; bottom: 0;
+  background: rgba(255,59,122,.04);
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+
+.ab-hobby-row:hover::before { opacity: 1; }
+
+.ab-hobby-row:hover .ab-hobby-icon-wrap {
+  background: var(--c2);
+  color: #fff;
+  transform: rotate(-8deg) scale(1.1);
+}
+
+.ab-hobby-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  border: 1.5px solid var(--bd2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--c2);
+  transition: .35s ease;
+  margin-top: 4px;
+}
+
+.ab-hobby-text h3 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--txt);
+  margin-bottom: 8px;
+}
+
+.ab-hobby-text p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--txt2);
+}
+
+.ab-hobby-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--txt2);
+  opacity: .3;
+  letter-spacing: .06em;
+  text-align: right;
+  padding-top: 6px;
+}
+
+/* ══════════════════
+   REVEAL
+══════════════════ */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity .75s ease var(--delay,0s), transform .75s ease var(--delay,0s);
+}
+.reveal-up.show { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════
+   RESPONSIVE
+══════════════════ */
+@media (max-width: 900px) {
+  .ab-me-body,
+  .ab-qual-body,
+  .ab-hobbies-body {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .ab-qual-title { position: static; }
+  .ab-qual-item { grid-template-columns: 44px 1fr; }
+  .ab-qual-tags { justify-content: flex-start; max-width: none; grid-column: 2; }
+  .ab-hobby-row { grid-template-columns: 52px 1fr 40px; }
+  .ab-stats { gap: 28px; }
+}
+
+@media (max-width: 576px) {
+  .ab-section { padding: 70px 0; }
+  .ab-big-title { font-size: 36px; }
+  .ab-qual-item,
+  .ab-hobby-row { grid-template-columns: 1fr; gap: 12px; }
+  .ab-qual-num, .ab-hobby-num { display: none; }
+  .ab-qual-tags { justify-content: flex-start; }
+  .ab-stats { flex-wrap: wrap; gap: 20px; }
+}
+</style>
+
+<script>
+(function () {
+  const els = document.querySelectorAll(".reveal-up");
+  function check() {
+    const t = window.innerHeight * 0.9;
+    els.forEach(el => {
+      if (el.getBoundingClientRect().top < t) el.classList.add("show");
+    });
+  }
+  check();
+  window.addEventListener("scroll", check);
+})();
+</script>
+
+{% endblock %}

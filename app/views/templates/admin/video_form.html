@@ -1,0 +1,181 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'Edit' if action=='edit' else 'New' }} Video{% endblock %}
+{% block topbar_title %}{{ 'Edit Video' if action=='edit' else 'Add Video' }}{% endblock %}
+
+{% block content %}
+<div class="form-wrap">
+  <form method="POST" action="{{ url_for('admin.video_edit', vid=video.id) if action=='edit' else url_for('admin.video_new') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-grid">
+      <div class="form-section">Video Info</div>
+
+      <div class="form-group full">
+        <label class="form-label">Video Title *</label>
+        <input type="text" name="title" class="form-input" required id="titleInput"
+          placeholder="e.g. Nexus Brand Cinematic Film"
+          value="{{ video.title if video else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Slug (URL)</label>
+        <input type="text" name="slug" class="form-input" id="slugInput"
+          placeholder="auto-generated"
+          value="{{ video.slug if video else '' }}">
+        <div class="form-hint">/videos/<strong id="slugPreview">{{ video.slug if video else '' }}</strong></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select name="category" class="form-input" required>
+          {% set cats = ['brand-film','motion','reel','product','documentary','music-video','tutorial','other'] %}
+          {% for c in cats %}
+          <option value="{{ c }}" {{ 'selected' if video and video.category==c }}>{{ c | title | replace('-',' ') }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-section">Video URL</div>
+
+      <div class="form-group full">
+        <label class="form-label">Video URL * <span style="color:var(--mu);font-weight:400">(YouTube, Vimeo, Instagram, or any link)</span></label>
+        <input type="url" name="video_url" class="form-input" required id="videoUrl"
+          placeholder="https://www.youtube.com/watch?v=..."
+          value="{{ video.video_url if video else '' }}">
+        <div class="form-hint">
+          Paste the full URL. Supported:
+          <strong style="color:var(--c2)">YouTube</strong> ·
+          <strong style="color:var(--c3)">Vimeo</strong> ·
+          <strong style="color:var(--g)">Instagram</strong> · Any link
+        </div>
+        <div id="urlDetect" class="url-preview" style="display:none"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Platform</label>
+        <select name="platform" class="form-input" id="platformSelect">
+          {% for p in ['youtube','vimeo','instagram','other'] %}
+          <option value="{{ p }}" {{ 'selected' if video and video.platform==p }}>{{ p | title }}</option>
+          {% endfor %}
+        </select>
+        <div class="form-hint">Auto-detected from URL, or override manually</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Duration</label>
+        <input type="text" name="duration" class="form-input"
+          placeholder="e.g. 3:24"
+          value="{{ video.duration if video else '' }}">
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Short Description</label>
+        <input type="text" name="short_desc" class="form-input" maxlength="300"
+          placeholder="One-liner for cards"
+          value="{{ video.short_desc if video else '' }}">
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Full Description</label>
+        <textarea name="description" class="form-input"
+          placeholder="Credits, tools, story behind the video...">{{ video.description if video else '' }}</textarea>
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Tools Used</label>
+        <input type="text" name="tools_used" class="form-input"
+          placeholder="DaVinci Resolve, After Effects, Premiere Pro  (comma-separated)"
+          value="{{ video.tools_used if video else '' }}">
+      </div>
+
+      <div class="form-section">Thumbnail</div>
+
+      <div class="form-group full">
+        <label class="form-label">Thumbnail Image URL</label>
+        <input type="url" name="thumbnail_url" class="form-input" id="thumbUrl"
+          placeholder="https://images.unsplash.com/..."
+          value="{{ video.thumbnail_url if video else '' }}">
+        <div class="form-hint">Paste any image URL for the video card thumbnail</div>
+        <div id="thumbPreview" style="margin-top:10px;display:{{ 'block' if video and video.thumbnail_url else 'none' }}">
+          <img id="thumbImg" src="{{ video.thumbnail_url if video and video.thumbnail_url else '' }}"
+            alt="" style="width:240px;height:135px;object-fit:cover;border-radius:8px;border:1px solid var(--bd2)">
+        </div>
+      </div>
+
+      <div class="form-section">Settings</div>
+
+      <div class="form-group">
+        <label class="form-label">Display Order</label>
+        <input type="number" name="order" class="form-input" min="0"
+          placeholder="0 = first" value="{{ video.order if video else 0 }}">
+      </div>
+
+      <div class="form-group" style="justify-content:flex-end;padding-top:8px">
+        <label class="form-check">
+          <input type="checkbox" name="featured" {{ 'checked' if video and video.featured }}>
+          <span>⭐ Featured (shown on homepage)</span>
+        </label>
+        <br><br>
+        <label class="form-check">
+          <input type="checkbox" name="published" {{ 'checked' if not video or video.published }}>
+          <span>✅ Published (visible on site)</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-save">{{ 'Save Changes' if action=='edit' else 'Add Video' }}</button>
+      <a href="{{ url_for('admin.videos') }}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+// Auto-slug
+var titleInput=document.getElementById('titleInput');
+var slugInput=document.getElementById('slugInput');
+var slugPreview=document.getElementById('slugPreview');
+{% if action == 'new' %}
+titleInput.addEventListener('input',function(){
+  var slug=titleInput.value.toLowerCase().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').trim();
+  slugInput.value=slug;slugPreview.textContent=slug;
+});
+{% endif %}
+slugInput.addEventListener('input',function(){slugPreview.textContent=slugInput.value});
+
+// URL detection
+var videoUrl=document.getElementById('videoUrl');
+var platformSelect=document.getElementById('platformSelect');
+var urlDetect=document.getElementById('urlDetect');
+function detectPlatform(url){
+  if(url.includes('youtube.com')||url.includes('youtu.be')) return 'youtube';
+  if(url.includes('vimeo.com')) return 'vimeo';
+  if(url.includes('instagram.com')) return 'instagram';
+  return 'other';
+}
+videoUrl.addEventListener('input',function(){
+  var url=videoUrl.value;
+  if(url){
+    var p=detectPlatform(url);
+    platformSelect.value=p;
+    var icons={youtube:'🎬 YouTube detected',vimeo:'🎥 Vimeo detected',instagram:'📱 Instagram detected',other:'🔗 External link'};
+    urlDetect.innerHTML=icons[p]+' — <a href="'+url+'" target="_blank" style="color:var(--c)">Preview ↗</a>';
+    urlDetect.style.display='block';
+  } else {
+    urlDetect.style.display='none';
+  }
+});
+{% if video and video.video_url %}
+videoUrl.dispatchEvent(new Event('input'));
+{% endif %}
+
+// Thumbnail preview
+var thumbUrl=document.getElementById('thumbUrl');
+var thumbPreview=document.getElementById('thumbPreview');
+var thumbImg=document.getElementById('thumbImg');
+thumbUrl.addEventListener('input',function(){
+  if(thumbUrl.value){thumbImg.src=thumbUrl.value;thumbPreview.style.display='block'}
+  else{thumbPreview.style.display='none'}
+});
+{% endblock %}

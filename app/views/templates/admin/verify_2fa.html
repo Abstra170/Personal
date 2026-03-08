@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two-Factor Verification</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#000;--surface:#111;--surface2:#1a1a1a;--txt:#f5f5f7;--mu:#6e6e73;--c:#0a84ff;--c2:#ff375f;--g:#32d74b;--bd:rgba(255,255,255,.1);--f:-apple-system,'SF Pro Display','Inter',sans-serif}
+body{background:var(--bg);color:var(--txt);font-family:var(--f);display:flex;align-items:center;justify-content:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:380px;padding:20px}
+.icon{text-align:center;font-size:52px;margin-bottom:16px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.title{font-size:24px;font-weight:800;letter-spacing:-0.04em;text-align:center;margin-bottom:8px}
+.sub{text-align:center;font-size:14px;color:var(--mu);margin-bottom:32px;line-height:1.5}
+.card{background:var(--surface);border:1px solid var(--bd);border-radius:16px;padding:32px}
+.error-msg{background:rgba(255,55,95,.1);border:1px solid rgba(255,55,95,.25);color:var(--c2);padding:11px 14px;border-radius:10px;font-size:14px;margin-bottom:16px;text-align:center}
+.code-label{font-size:13px;font-weight:500;color:var(--mu);margin-bottom:10px;display:block}
+.code-input{
+  width:100%;background:var(--surface2);border:1px solid var(--bd);border-radius:12px;
+  padding:18px 14px;color:var(--txt);font-family:'SF Mono','Menlo',monospace;
+  font-size:28px;font-weight:700;letter-spacing:.25em;text-align:center;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.code-input:focus{border-color:var(--c);box-shadow:0 0 0 3px rgba(10,132,255,.12)}
+.code-input::placeholder{font-size:18px;letter-spacing:.1em;color:rgba(255,255,255,.2)}
+.hint{font-size:12px;color:var(--mu);text-align:center;margin:12px 0 20px;line-height:1.55}
+.btn-verify{
+  width:100%;padding:14px;background:var(--c);color:#fff;border:none;
+  border-radius:980px;font-family:var(--f);font-size:15px;font-weight:600;
+  cursor:pointer;transition:opacity .2s,transform .2s;
+}
+.btn-verify:hover{opacity:.85;transform:translateY(-1px)}
+.divider{border:none;border-top:1px solid var(--bd);margin:20px 0}
+.back-link{display:block;text-align:center;font-size:13px;color:var(--mu);text-decoration:none;transition:color .2s}
+.back-link:hover{color:var(--c)}
+/* Digit boxes visual feedback */
+.digit-boxes{display:flex;gap:8px;justify-content:center;margin-bottom:8px}
+.dbox{width:42px;height:52px;border:1px solid var(--bd);border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:'SF Mono','Menlo',monospace;color:var(--txt);transition:border-color .2s}
+.dbox.filled{border-color:var(--c);background:rgba(10,132,255,.08)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="icon">🔐</div>
+  <div class="title">Two-Factor Auth</div>
+  <div class="sub">Open your authenticator app<br>and enter the 6-digit code.</div>
+
+  <div class="card">
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <!-- Visual digit boxes (cosmetic) -->
+    <div class="digit-boxes" id="boxes">
+      <div class="dbox" id="d0"></div>
+      <div class="dbox" id="d1"></div>
+      <div class="dbox" id="d2"></div>
+      <div class="dbox" id="d3"></div>
+      <div class="dbox" id="d4"></div>
+      <div class="dbox" id="d5"></div>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin.verify_2fa') }}" id="tfForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="code-label" style="display:none">Code</label>
+      <input
+        type="text" name="code" id="codeInput"
+        class="code-input" maxlength="6" inputmode="numeric"
+        pattern="[0-9]{6}" autocomplete="one-time-code"
+        placeholder="000000" autofocus required
+        style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px">
+      <div class="hint">Code refreshes every 30 seconds.<br>Google Authenticator · Authy · 1Password</div>
+      <button type="submit" class="btn-verify" id="submitBtn" disabled>Verify Code →</button>
+    </form>
+
+    <hr class="divider">
+    <a href="{{ url_for('admin.login') }}" class="back-link">← Back to login</a>
+  </div>
+</div>
+
+<script>
+// Intercept keypresses and show in boxes, submit when 6 digits entered
+var boxes=[0,1,2,3,4,5].map(function(i){return document.getElementById('d'+i)});
+var codeInput=document.getElementById('codeInput');
+var submitBtn=document.getElementById('submitBtn');
+var digits=[];
+
+document.addEventListener('keydown',function(e){
+  if(/^[0-9]$/.test(e.key)&&digits.length<6){
+    digits.push(e.key);
+    update();
+    if(digits.length===6){
+      codeInput.value=digits.join('');
+      submitBtn.disabled=false;
+      // Auto-submit after tiny delay so user sees full code
+      setTimeout(function(){document.getElementById('tfForm').submit()},280);
+    }
+  } else if(e.key==='Backspace'&&digits.length>0){
+    digits.pop();update();
+  }
+});
+
+function update(){
+  boxes.forEach(function(b,i){
+    b.textContent=digits[i]||'';
+    b.classList.toggle('filled',i<digits.length);
+  });
+  submitBtn.disabled=digits.length<6;
+}
+
+// Also allow paste
+document.addEventListener('paste',function(e){
+  var text=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+  digits=text.split('');
+  update();
+  if(digits.length===6){
+    codeInput.value=digits.join('');
+    submitBtn.disabled=false;
+    setTimeout(function(){document.getElementById('tfForm').submit()},280);
+  }
+});
+
+// Countdown timer
+var timerEl=document.createElement('div');
+timerEl.style.cssText='text-align:center;font-size:11px;color:var(--mu);margin-top:8px;font-family:SF Mono,Menlo,monospace';
+document.querySelector('.hint').appendChild(timerEl);
+function updateTimer(){
+  var remaining=30-Math.floor(Date.now()/1000)%30;
+  timerEl.textContent='Next code in: '+remaining+'s';
+}
+updateTimer();
+setInterval(updateTimer,1000);
+</script>
+</body>
+</html>

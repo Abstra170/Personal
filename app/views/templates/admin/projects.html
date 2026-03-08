@@ -1,0 +1,62 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Projects{% endblock %}
+{% block topbar_title %}Projects{% endblock %}
+
+{% block content %}
+<div class="t-wrap">
+  <div class="t-head">
+    <div class="t-head-title">All Projects ({{ projects | length }})</div>
+    <a href="{{ url_for('admin.project_new') }}" class="btn-new">+ New Project</a>
+  </div>
+  {% if projects %}
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th><th>Category</th><th>Tech Stack</th><th>Order</th><th>Featured</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in projects %}
+      <tr>
+        <td><div class="td-title">{{ p.title }}</div><div class="td-muted" style="font-size:12px">{{ p.slug }}</div></td>
+        <td><span class="tag-pill tag-c">{{ p.category }}</span></td>
+        <td class="td-muted" style="font-size:12px">{{ (p.tech_list[:3] | join(', ')) if p.tech_list else '—' }}</td>
+        <td class="td-muted">{{ p.order }}</td>
+        <td>{{ '★' if p.featured else '—' }}</td>
+        <td>
+          <span class="status-dot {{ 'dot-on' if p.published else 'dot-off' }}"></span>
+          <span id="pub-p-{{ p.id }}">{{ 'Live' if p.published else 'Draft' }}</span>
+        </td>
+        <td>
+          <div class="act-btns">
+            <a href="{{ url_for('admin.project_edit', pid=p.id) }}" class="act-btn ab-edit">Edit</a>
+            <button class="act-btn ab-pub" onclick="togglePub('project','{{ p.id }}')">Toggle</button>
+            <form class="del-form" method="POST" action="{{ url_for('admin.project_delete', pid=p.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="act-btn ab-del confirm-del">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">⬡</div>
+    <p>No projects yet. Add your first project!</p>
+    <a href="{{ url_for('admin.project_new') }}" class="btn-new">+ New Project</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+function togglePub(type,id){
+  fetch('/admin/'+type+'s/'+id+'/toggle',{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token() }}','Content-Type':'application/json'}})
+  .then(r=>r.json()).then(d=>{
+    var el=document.getElementById('pub-'+type[0]+'-'+id);
+    if(el) el.textContent=d.published?'Live':'Draft';
+  });
+}
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Settings{% endblock %}
+{% block topbar_title %}Account Settings{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px">
+
+  <!-- Change Password -->
+  <div class="t-wrap" style="padding:28px">
+    <div style="margin-bottom:22px">
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px">Change Password</div>
+      <div style="font-size:13px;color:var(--mu)">Minimum 8 characters. Use a strong, unique password.</div>
+    </div>
+    {% if error %}<div class="flash error" style="margin-bottom:16px">{{ error }}</div>{% endif %}
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Current Password</label>
+        <input type="password" name="current_password" class="form-input" required placeholder="••••••••">
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">New Password</label>
+        <input type="password" name="new_password" class="form-input" required placeholder="••••••••" minlength="8">
+      </div>
+      <div class="form-group" style="margin-bottom:20px">
+        <label class="form-label">Confirm New Password</label>
+        <input type="password" name="confirm_password" class="form-input" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn-save">Update Password</button>
+    </form>
+  </div>
+
+  <!-- Security Info -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <!-- 2FA status -->
+    <div class="t-wrap" style="padding:24px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Two-Factor Auth</div>
+      {% if totp_active %}
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(50,215,75,.08);border:1px solid rgba(50,215,75,.2);border-radius:10px;margin-bottom:14px">
+        <span style="font-size:20px">✅</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--g)">2FA Active</div>
+          <div style="font-size:12px;color:var(--mu)">TOTP is enabled and required at login</div>
+        </div>
+      </div>
+      {% else %}
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,55,95,.08);border:1px solid rgba(255,55,95,.2);border-radius:10px;margin-bottom:14px">
+        <span style="font-size:20px">⚠️</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--c2)">2FA Not Active</div>
+          <div style="font-size:12px;color:var(--mu)">Run <code style="background:var(--surface2);padding:2px 5px;border-radius:4px">python setup_2fa.py</code> to enable</div>
+        </div>
+      </div>
+      {% endif %}
+      <div style="font-size:12px;color:var(--mu);line-height:1.7">
+        To change your 2FA, run <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">python setup_2fa.py</code> in your project folder. This will generate a new QR code.
+      </div>
+    </div>
+
+    <!-- Session info -->
+    <div class="t-wrap" style="padding:24px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Session Info</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--bd2)">
+          <span style="color:var(--mu)">Last login</span>
+          <span>{{ last_login.strftime('%b %d, %Y %H:%M') if last_login else '—' }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--bd2)">
+          <span style="color:var(--mu)">Last IP</span>
+          <span style="font-family:SF Mono,Menlo,monospace;font-size:12px">{{ last_ip or '—' }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0">
+          <span style="color:var(--mu)">Total logins</span>
+          <span>{{ login_count or 0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- IP Allowlist info -->
+    <div class="t-wrap" style="padding:24px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:10px">IP Allowlist</div>
+      <div style="font-size:12px;color:var(--mu);line-height:1.75">
+        Manage allowed IPs in your <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">.env</code> file:<br>
+        <code style="background:var(--surface2);padding:4px 8px;border-radius:6px;font-size:11px;display:block;margin-top:8px">ADMIN_ALLOWED_IPS=your.ip.here</code>
+        <br>Use <a href="https://whatismyip.com" target="_blank" style="color:var(--c)">whatismyip.com</a> to find your current IP.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

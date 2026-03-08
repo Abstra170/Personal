@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Apply saved theme instantly before any CSS renders (prevents flash) -->
+<script>
+(function(){
+  var t=localStorage.getItem('theme');
+  if(t) document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+<title>{% block title %}Bibek bohara{% endblock %} — Developer &amp; Video Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[data-theme="dark"]{--bg:#000;--bg2:#0a0a0a;--bg3:#111;--surface:#1c1c1e;--surface2:#2c2c2e;--txt:#f5f5f7;--txt2:#a1a1a6;--mu:#6e6e73;--c:#0a84ff;--c2:#ff375f;--c3:#bf5af2;--g:#32d74b;--bd:rgba(255,255,255,.1);--bd2:rgba(255,255,255,.06);--shadow:rgba(10,132,255,.25)}
+[data-theme="light"]{--bg:#f5f5f7;--bg2:#fff;--bg3:#e8e8ed;--surface:#fff;--surface2:#f5f5f7;--txt:#1d1d1f;--txt2:#424245;--mu:#86868b;--c:#0071e3;--c2:#ff3b30;--c3:#8944ab;--g:#28cd41;--bd:rgba(0,0,0,.1);--bd2:rgba(0,0,0,.07);--shadow:rgba(0,113,227,.2)}
+:root{--f:-apple-system,'SF Pro Display','Inter',sans-serif;--ease:cubic-bezier(.4,0,.2,1)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--f);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+img{display:block;max-width:100%}
+
+/* AURORA */
+#aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.ab{position:absolute;border-radius:50%;filter:blur(90px);animation:af 14s ease-in-out infinite alternate;opacity:.25}
+[data-theme="light"] .ab{opacity:.1}
+.ab1{width:700px;height:700px;background:radial-gradient(circle,rgba(10,132,255,.35),transparent 70%);top:-200px;right:-100px}
+.ab2{width:500px;height:500px;background:radial-gradient(circle,rgba(191,90,242,.25),transparent 70%);bottom:-100px;left:-100px;animation-delay:-4s}
+.ab3{width:400px;height:400px;background:radial-gradient(circle,rgba(255,55,95,.18),transparent 70%);top:40%;left:30%;animation-delay:-8s}
+@keyframes af{0%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.08)}100%{transform:translate(-20px,40px) scale(.95)}}
+#grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--bd2) 1px,transparent 1px),linear-gradient(90deg,var(--bd2) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:0 52px;height:52px;display:flex;justify-content:space-between;align-items:center;transition:background .4s}
+nav.stuck{background:rgba(0,0,0,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd2)}
+[data-theme="light"] nav.stuck{background:rgba(245,245,247,.85)}
+.nav-logo{font-size:17px;font-weight:700;letter-spacing:-0.02em;color:var(--txt);text-decoration:none}
+.nav-logo span{color:var(--c)}
+.nav-r{display:flex;align-items:center;gap:24px}
+.nav-links{display:flex;gap:20px;list-style:none}
+.nav-links a{font-size:13px;font-weight:500;color:var(--mu);text-decoration:none;letter-spacing:-0.01em;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--txt)}
+.theme-btn{width:40px;height:22px;border-radius:99px;border:1px solid var(--bd);background:var(--surface);cursor:pointer;position:relative;display:flex;align-items:center;padding:2px;transition:background .3s}
+.theme-btn::after{content:'';width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--c),var(--c3));transition:transform .3s var(--ease);box-shadow:0 0 6px var(--c)}
+[data-theme="light"] .theme-btn::after{transform:translateX(18px);background:linear-gradient(135deg,#ff9500,#ffcc00);box-shadow:0 0 6px #ffcc00}
+.nav-cta{padding:7px 18px;background:var(--c);color:#fff;border-radius:980px;font-size:13px;font-weight:600;letter-spacing:-0.01em;text-decoration:none;transition:opacity .2s,transform .2s}
+.nav-cta:hover{opacity:.85;transform:translateY(-1px)}
+
+/* PAGE WRAP */
+main{z-index:1;padding-top:10px}
+
+/* SECTION */
+.sec{padding:100px 60px}
+.sec-eye{font-size:12px;font-weight:600;color:var(--c);letter-spacing:.01em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-eye::before{content:'';width:14px;height:1px;background:var(--c)}
+.sec-h{font-size:clamp(36px,5vw,68px);font-weight:700;letter-spacing:-0.04em;line-height:.92;margin-bottom:48px;color:var(--txt)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--bd2);border-radius:12px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s}
+.card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.card-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--surface2)}
+.card-thumb-wrap{position:relative;overflow:hidden;aspect-ratio:16/9}
+.card-thumb-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.card:hover .card-thumb-wrap img{transform:scale(1.05)}
+.card-body{padding:20px}
+.card-tag{font-size:11px;font-weight:600;color:var(--c);letter-spacing:.02em;margin-bottom:7px}
+.card-title{font-size:18px;font-weight:700;letter-spacing:-0.03em;color:var(--txt);margin-bottom:8px;line-height:1.2}
+.card-desc{font-size:14px;font-weight:400;color:var(--mu);line-height:1.65;letter-spacing:-0.01em;margin-bottom:14px}
+.card-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.pill{padding:4px 10px;border:1px solid var(--bd);border-radius:980px;font-size:11px;font-weight:500;color:var(--mu)}
+.card-lnk{font-size:13px;font-weight:600;color:var(--c);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:gap .2s}
+.card-lnk:hover{gap:9px}
+.card-lnk::after{content:'↗'}
+
+/* GRID */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+
+/* PILL FILTER */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+.f-pill{padding:7px 18px;border:1px solid var(--bd);border-radius:980px;font-size:13px;font-weight:500;color:var(--mu);background:none;cursor:pointer;transition:all .2s}
+.f-pill:hover,.f-pill.active{border-color:var(--c);color:var(--c);background:rgba(10,132,255,.08)}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.vis{opacity:1;transform:none}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:980px;font-family:var(--f);font-size:15px;font-weight:600;letter-spacing:-0.01em;cursor:pointer;text-decoration:none;border:none;transition:opacity .2s,transform .2s,box-shadow .2s}
+.btn:hover{opacity:.88;transform:translateY(-2px)}
+.btn-p{background:var(--c);color:#fff}
+.btn-p:hover{box-shadow:0 12px 36px var(--shadow)}
+.btn-s{background:var(--surface);color:var(--txt);border:1px solid var(--bd)}
+
+/* FLASH */
+.flash-wrap{position:fixed;top:60px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px}
+.flash{padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;backdrop-filter:blur(12px);animation:flashIn .3s var(--ease)}
+.flash.success{background:rgba(50,215,75,.15);border:1px solid rgba(50,215,75,.3);color:var(--g)}
+.flash.info{background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.25);color:var(--c)}
+.flash.error{background:rgba(255,55,95,.12);border:1px solid rgba(255,55,95,.25);color:var(--c2)}
+@keyframes flashIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+
+/* FOOTER */
+footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 60px 32px}
+.ft-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:52px}
+.ft-brand .fl{font-size:22px;font-weight:800;letter-spacing:-0.04em;color:var(--txt);margin-bottom:12px}
+.ft-brand .fl span{color:var(--c)}
+.ft-brand p{font-size:13px;color:var(--mu);line-height:1.7;max-width:240px;margin-bottom:20px}
+.ft-socials{display:flex;gap:10px;flex-wrap:wrap}
+.ft-social{width:36px;height:36px;border-radius:50%;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:15px;text-decoration:none;transition:border-color .2s,background .2s;color:var(--txt)}
+.ft-social:hover{border-color:var(--c);background:rgba(10,132,255,.1)}
+.ft-col h4{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:16px}
+.ft-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.ft-col ul li a{font-size:13px;color:var(--mu);text-decoration:none;transition:color .2s}
+.ft-col ul li a:hover{color:var(--txt)}
+.ft-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--bd2)}
+.ft-copy{font-size:12px;color:var(--mu)}
+.ft-copy span{color:var(--c2)}
+
+/* YT MODAL */
+.yt-modal{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.92);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.yt-modal.open{opacity:1;pointer-events:all}
+.yt-inner{width:min(900px,90vw);position:relative}
+.yt-wrap{position:relative;padding-top:56.25%;background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--bd2)}
+.yt-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.yt-close{position:absolute;top:-44px;right:0;background:none;border:1px solid rgba(255,255,255,.2);color:#fff;font-family:var(--f);font-size:13px;font-weight:500;padding:7px 18px;border-radius:980px;cursor:pointer;transition:background .2s}
+.yt-close:hover{background:rgba(255,255,255,.1)}
+
+
+
+
+/* BLINK */
+.blink{animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
+
+@media(max-width:900px){
+  nav{padding:0 20px}
+  .sec{padding:70px 22px}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  footer{padding:40px 22px 24px}
+  .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
+  .ft-bottom{flex-direction:column;gap:8px;text-align:center}
+}
+</style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<div id="aurora"><div class="ab ab1"></div><div class="ab ab2"></div><div class="ab ab3"></div></div>
+<div id="grid"></div>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-wrap" id="flashWrap">
+  {% for cat, msg in messages %}
+  <div class="flash {{ cat }}">{{ msg }}</div>
+  {% endfor %}
+</div>
+<script>setTimeout(function(){var w=document.getElementById('flashWrap');if(w)w.remove()},4000)</script>
+{% endif %}
+{% endwith %}
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="{{ url_for('public.index') }}">Bibek<span>.</span>bohara</a>
+  <div class="nav-r">
+    <ul class="nav-links">
+      <li><a href="{{ url_for('public.index') }}" class="{{ 'active' if request.endpoint=='public.index' }}">Home</a></li>
+      <li><a href="{{ url_for('public.projects') }}" class="{{ 'active' if 'project' in request.endpoint }}">Projects</a></li>
+      <li><a href="{{ url_for('public.videos') }}" class="{{ 'active' if 'video' in request.endpoint }}">Videos</a></li>
+      <li><a href="{{ url_for('public.about') }}" class="{{ 'active' if request.endpoint=='public.about' }}">About</a></li>
+      <li><a href="{{ url_for('public.contact') }}" class="{{ 'active' if request.endpoint=='public.contact' }}">Contact</a></li>
+    </ul>
+    <button class="theme-btn" id="themeBtn"></button>
+    <a href="{{ url_for('public.contact') }}" class="nav-cta">Hire Me</a>
+  </div>
+</nav>
+
+<!-- YT MODAL (shared) -->
+<div class="yt-modal" id="ytModal">
+  <div class="yt-inner">
+    <button class="yt-close" id="ytClose">✕ Close</button>
+    <div class="yt-wrap"><iframe id="ytFrame" src="" allow="autoplay;encrypted-media" allowfullscreen></iframe></div>
+  </div>
+</div>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>
+  <div class="ft-grid">
+
+    <!-- Brand column -->
+    <div class="ft-brand">
+      <div class="fl">Bibek<span>.</span>Bohara</div>
+      <p>Full-Stack Developer & Video Editor. Building fast web experiences and crafting cinematic stories.</p>
+      <!-- Social links — replace # with your real URLs -->
+      <div class="ft-socials">
+        <a href="https://github.com/" class="ft-social" title="GitHub" target="_blank" rel="noopener">⌥</a>
+        <a href="https://www.linkedin.com/in/bibek-bohara-16b920363/" class="ft-social" title="LinkedIn" target="_blank" rel="noopener">in</a>
+        <a href="https://www.instagram.com/bibekbohara170/" class="ft-social" title="Instagram" target="_blank" rel="noopener">◉</a>
+      </div>
+    </div>
+
+    <!-- Work column -->
+    <div class="ft-col">
+      <h4>Work</h4>
+      <ul>
+        <li><a href="{{ url_for('public.projects') }}">All Projects</a></li>
+        <li><a href="{{ url_for('public.projects') }}?cat=web">Web Dev</a></li>
+        <li><a href="{{ url_for('public.videos') }}">Video Reels</a></li>
+        <li><a href="{{ url_for('public.videos') }}?cat=cinematic">Cinematics</a></li>
+      </ul>
+    </div>
+
+    <!-- Pages column -->
+    <div class="ft-col">
+      <h4>Pages</h4>
+      <ul>
+        <li><a href="{{ url_for('public.index') }}">Home</a></li>
+        <li><a href="{{ url_for('public.about') }}">About Me</a></li>
+        <li><a href="{{ url_for('public.contact') }}">Contact</a></li>
+        <li><a href="{{ url_for('public.projects') }}">Projects</a></li>
+        <li><a href="{{ url_for('public.videos') }}">Videos</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact column -->
+    <div class="ft-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="bibekbohara170@gmail.com">bibekbohara170@gmail.com</a></li>
+<!--        <li><a href="{{ url_for('public.contact') }}">Send a Message</a></li>-->
+<!--        <li><a href="#" target="_blank" rel="noopener">Download CV</a></li>-->
+        <li><a href="{{ url_for('public.contact') }}" target="_blank" rel="noopener">Hire Me</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="ft-bottom">
+    <div class="ft-copy">© 2025 Bibek bohara. Coded & crafted with <span>♥</span> </div>
+    <div class="ft-copy" style="display:flex;gap:16px">
+<!--      <a href="#" style="font-size:12px;color:var(&#45;&#45;mu);text-decoration:none">Privacy</a>-->
+<!--      <a href="#" style="font-size:12px;color:var(&#45;&#45;mu);text-decoration:none">Terms</a>-->
+    </div>
+  </div>
+</footer>
+
+<script>
+// Theme — persists across all pages via localStorage
+var html=document.documentElement;
+document.getElementById('themeBtn').addEventListener('click',function(){
+  var next=html.getAttribute('data-theme')==='dark'?'light':'dark';
+  html.setAttribute('data-theme',next);
+  localStorage.setItem('theme',next);
+});
+// Nav sticky
+window.addEventListener('scroll',function(){
+  document.getElementById('nav').classList.toggle('stuck',window.scrollY>40);
+});
+// Reveal
+var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('vis')})},{threshold:.1});
+document.querySelectorAll('.rv').forEach(function(el){obs.observe(el)});
+// YT Modal
+var modal=document.getElementById('ytModal'),frame=document.getElementById('ytFrame');
+document.getElementById('ytClose').addEventListener('click',function(){modal.classList.remove('open');frame.src=''});
+modal.addEventListener('click',function(e){if(e.target===modal){modal.classList.remove('open');frame.src=''}});
+function openVideo(url){frame.src=url;modal.classList.add('open')}
+// Aurora parallax
+document.addEventListener('mousemove',function(e){
+  var x=(e.clientX/window.innerWidth-.5)*30,y=(e.clientY/window.innerHeight-.5)*30;
+  document.querySelectorAll('.ab').forEach(function(b,i){var f=(i+1)*.4;b.style.transform='translate('+(x*f)+'px,'+(y*f)+'px)'});
+});
+{% block extra_js %}{% endblock %}
+</script>
+</body>
+</html>

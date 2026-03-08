@@ -1,0 +1,143 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'Edit' if action=='edit' else 'New' }} Project{% endblock %}
+{% block topbar_title %}{{ 'Edit Project' if action=='edit' else 'New Project' }}{% endblock %}
+
+{% block content %}
+<div class="form-wrap">
+  <form method="POST" action="{{ url_for('admin.project_edit', pid=project.id) if action=='edit' else url_for('admin.project_new') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-grid">
+      <div class="form-section">Basic Info</div>
+
+      <div class="form-group full">
+        <label class="form-label">Project Title *</label>
+        <input type="text" name="title" class="form-input" required
+          placeholder="e.g. Lumina AI Dashboard"
+          value="{{ project.title if project else '' }}"
+          id="titleInput">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Slug (URL)</label>
+        <input type="text" name="slug" class="form-input" id="slugInput"
+          placeholder="auto-generated"
+          value="{{ project.slug if project else '' }}">
+        <div class="form-hint">Auto-generated from title. Used in URL: /projects/<strong id="slugPreview">{{ project.slug if project else '' }}</strong></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select name="category" class="form-input" required>
+          {% set cats = ['web','fullstack','webgl','mobile','open-source','api','other'] %}
+          {% for c in cats %}
+          <option value="{{ c }}" {{ 'selected' if project and project.category==c }}>{{ c | title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Short Description</label>
+        <input type="text" name="short_desc" class="form-input" maxlength="300"
+          placeholder="One-liner for cards and listings"
+          value="{{ project.short_desc if project else '' }}">
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Full Description</label>
+        <textarea name="description" class="form-input" rows="5"
+          placeholder="Detailed description shown on the project detail page...">{{ project.description if project else '' }}</textarea>
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Tech Stack</label>
+        <input type="text" name="tech_stack" class="form-input"
+          placeholder="React, TypeScript, Node.js, PostgreSQL  (comma-separated)"
+          value="{{ project.tech_stack if project else '' }}">
+        <div class="form-hint">Comma-separated list of technologies</div>
+      </div>
+
+      <div class="form-section">Links &amp; Media</div>
+
+      <div class="form-group full">
+        <label class="form-label">Thumbnail Image URL</label>
+        <input type="url" name="thumbnail_url" class="form-input" id="thumbUrl"
+          placeholder="https://images.unsplash.com/..."
+          value="{{ project.thumbnail_url if project else '' }}">
+        <div class="form-hint">Paste any image URL (Unsplash, Imgur, your own CDN, etc.)</div>
+        <div id="thumbPreview" style="margin-top:10px;display:none">
+          <img id="thumbImg" src="" alt="" style="width:200px;height:112px;object-fit:cover;border-radius:8px;border:1px solid var(--bd2)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Live URL</label>
+        <input type="url" name="live_url" class="form-input"
+          placeholder="https://yourproject.com"
+          value="{{ project.live_url if project else '' }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">GitHub URL</label>
+        <input type="url" name="github_url" class="form-input"
+          placeholder="https://github.com/..."
+          value="{{ project.github_url if project else '' }}">
+      </div>
+
+      <div class="form-section">Settings</div>
+
+      <div class="form-group">
+        <label class="form-label">Display Order</label>
+        <input type="number" name="order" class="form-input" min="0"
+          placeholder="0 = first" value="{{ project.order if project else 0 }}">
+        <div class="form-hint">Lower number = shown first</div>
+      </div>
+
+      <div class="form-group" style="justify-content:flex-end;padding-top:8px">
+        <label class="form-check">
+          <input type="checkbox" name="featured" {{ 'checked' if project and project.featured }}>
+          <span>⭐ Featured (shown on homepage)</span>
+        </label>
+        <br><br>
+        <label class="form-check">
+          <input type="checkbox" name="published" {{ 'checked' if not project or project.published }}>
+          <span>✅ Published (visible on site)</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-save">{{ 'Save Changes' if action=='edit' else 'Create Project' }}</button>
+      <a href="{{ url_for('admin.projects') }}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+// Auto-slug from title
+var titleInput=document.getElementById('titleInput');
+var slugInput=document.getElementById('slugInput');
+var slugPreview=document.getElementById('slugPreview');
+{% if action == 'new' %}
+titleInput.addEventListener('input',function(){
+  var slug=titleInput.value.toLowerCase().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').trim();
+  slugInput.value=slug;
+  slugPreview.textContent=slug;
+});
+{% endif %}
+slugInput.addEventListener('input',function(){slugPreview.textContent=slugInput.value});
+
+// Thumbnail preview
+var thumbUrl=document.getElementById('thumbUrl');
+var thumbPreview=document.getElementById('thumbPreview');
+var thumbImg=document.getElementById('thumbImg');
+{% if project and project.thumbnail_url %}
+thumbImg.src='{{ project.thumbnail_url }}';
+thumbPreview.style.display='block';
+{% endif %}
+thumbUrl.addEventListener('input',function(){
+  if(thumbUrl.value){thumbImg.src=thumbUrl.value;thumbPreview.style.display='block'}
+  else{thumbPreview.style.display='none'}
+});
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Videos{% endblock %}
+
+{% block extra_head %}
+<style>
+.page-hero{padding:100px 60px 60px;background:var(--surface)}
+.page-hero h1{font-size:clamp(48px,7vw,96px);font-weight:800;letter-spacing:-0.04em;line-height:.9}
+.page-hero p{font-size:17px;color:var(--mu);margin-top:16px;max-width:500px;letter-spacing:-0.01em}
+.v-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.v-card{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--bd2);cursor:pointer;aspect-ratio:16/9;transition:transform .35s var(--ease),box-shadow .35s}
+.v-card:hover{transform:scale(1.02);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.v-card.wide{grid-column:1/-1;aspect-ratio:21/9}
+.v-thumb{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .5s;background-color:var(--surface2)}
+.v-card:hover .v-thumb{transform:scale(1.06)}
+.v-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.1) 55%,transparent 100%)}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;transition:transform .3s,background .3s}
+.v-card:hover .play-btn{transform:translate(-50%,-50%) scale(1.12);background:var(--c2);border-color:var(--c2)}
+.v-info{position:absolute;bottom:0;left:0;right:0;padding:18px 20px}
+.v-cat{font-size:11px;font-weight:600;color:var(--c2);margin-bottom:5px;letter-spacing:.02em;text-transform:uppercase}
+.v-title{font-size:clamp(15px,2vw,22px);font-weight:700;letter-spacing:-0.03em;color:#fff;line-height:1.1;margin-bottom:5px}
+.v-dur{font-size:11px;color:rgba(255,255,255,.45)}
+.v-platform{position:absolute;top:14px;right:14px;padding:4px 10px;border-radius:980px;font-size:10px;font-weight:600;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15)}
+.no-videos{text-align:center;padding:80px 0;color:var(--mu)}
+@media(max-width:900px){.v-grid{grid-template-columns:1fr}.v-card.wide{aspect-ratio:16/9}.page-hero{padding:80px 22px 40px}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="sec-eye rv">video_showcase</div>
+  <h1 class="rv">Reels &amp; <span style="color:var(--c2)">Films</span></h1>
+  <p class="rv">Brand films, motion graphics, product reels, and creative experiments.</p>
+</div>
+
+<section class="sec" style="padding-top:40px">
+  {% if categories %}
+  <div class="filter-bar rv">
+    <button class="f-pill active" data-cat="all">All</button>
+    {% for cat in categories %}
+    <button class="f-pill" data-cat="{{ cat }}">{{ cat | title | replace('-',' ') }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if videos %}
+  <div class="v-grid rv">
+    {% for v in videos %}
+    <div class="v-card {% if loop.first and v.featured %}wide{% endif %}" data-cat="{{ v.category }}" onclick="openVideo('{{ v.embed_url }}')">
+      <div class="v-thumb" {% if v.thumbnail_url %}style="background-image:url('{{ v.thumbnail_url }}')"{% endif %}></div>
+      <div class="v-ov"></div>
+      <div class="play-btn">▶</div>
+      <div class="v-platform">{{ v.platform | upper }}</div>
+      <div class="v-info">
+        <div class="v-cat">{{ v.category | replace('-',' ') }}</div>
+        <div class="v-title">{{ v.title }}</div>
+        {% if v.duration %}<div class="v-dur">{{ v.duration }}{% if v.tools_list %} · {{ v.tools_list[0] }}{% endif %}</div>{% endif %}
+        <div class="p-card-links">
+          <a href="{{ url_for('public.video_detail', slug=v.slug) }}" class="p-lnk" style="
+          margin-top:10px;text-decoration: none;  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          ">Details</a>
+        </div>
+      </div>
+
+    </div>
+
+
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="no-videos">
+    <div style="font-size:48px;margin-bottom:16px">▶</div>
+    <p style="font-size:17px">No videos yet — add some via the <a href="{{ url_for('admin.dashboard') }}" style="color:var(--c)">admin panel</a>.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+document.querySelectorAll('.f-pill').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.f-pill').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    var cat=btn.dataset.cat;
+    document.querySelectorAll('.v-card').forEach(function(c){
+      c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
+    });
+  });
+});
+{% endblock %}

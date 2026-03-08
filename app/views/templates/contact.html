@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+{% block extra_head %}
+<style>
+.cont-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:600px}
+.cont-vis{position:relative;overflow:hidden;background:var(--surface)}
+.cont-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=900&q=80&auto=format&fit=crop') center/cover;filter:saturate(.3) brightness(.42)}
+.cont-grad{position:absolute;inset:0;background:linear-gradient(to right,transparent 50%,var(--bg) 100%)}
+.cont-txt{position:absolute;bottom:56px;left:48px}
+.cvt{font-size:clamp(44px,6vw,80px);font-weight:800;letter-spacing:-0.04em;line-height:.88;color:transparent;-webkit-text-stroke:1.5px rgba(10,132,255,.4)}
+.cont-form{padding:68px 56px;background:var(--surface);display:flex;flex-direction:column;justify-content:center}
+.clinks{display:flex;flex-direction:column;margin-bottom:28px}
+.clink{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--bd);color:var(--txt);text-decoration:none;font-size:15px;font-weight:400;letter-spacing:-0.01em;transition:color .2s,padding-left .2s}
+.clink:hover{color:var(--c);padding-left:5px}
+.cl-arr{margin-left:auto;opacity:.25;transition:opacity .2s,transform .2s}
+.clink:hover .cl-arr{opacity:1;transform:translateX(4px)}
+.cform{display:flex;flex-direction:column;gap:12px}
+.crow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cf{display:flex;flex-direction:column;gap:5px}
+.cf label{font-size:12px;font-weight:500;color:var(--mu)}
+.cf input,.cf textarea{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;color:var(--txt);font-family:var(--f);font-size:15px;outline:none;resize:none;transition:border-color .2s,box-shadow .2s}
+.cf input:focus,.cf textarea:focus{border-color:var(--c);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+.cf textarea{min-height:88px}
+.csend{padding:14px 28px;background:var(--c);color:#fff;border:none;border-radius:980px;font-family:var(--f,-apple-system,sans-serif);font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s,transform .2s}
+.csend:hover{opacity:.85;transform:translateY(-1px)}
+@media(max-width:900px){.cont-grid{grid-template-columns:1fr}.cont-vis{min-height:200px}.cont-form{padding:40px 24px}.crow{grid-template-columns:1fr}}
+</style>
+{% endblock %}
+{% block content %}
+<div style="padding-top:52px">
+  <div class="cont-grid">
+    <div class="cont-vis rv-l" style="opacity:1;transform:none">
+      <div class="cont-photo"></div>
+      <div class="cont-grad"></div>
+      <div class="cont-txt"><div class="cvt">LET'S<br>CREATE<br>TOGETHER</div></div>
+    </div>
+    <div class="cont-form">
+      <div class="sec-eye">get_in_touch()</div>
+      <h2 style="font-size:clamp(32px,4vw,52px);font-weight:800;letter-spacing:-0.04em;margin-bottom:22px">Start a <span style="color:var(--c)">Project</span></h2>
+      <div class="clinks">
+<!--        <a class="clink" href="bibekbohara"><span>✉</span><span>hello@alexmorgan.dev</span><span class="cl-arr">→</span></a>-->
+        <a class="clink" href="https://github.com" target="_blank"><span>⬡</span><span>github.com/alexmorgan</span><span class="cl-arr">→</span></a>
+        <a class="clink" href="#"><span>▶</span><span>YouTube / Vimeo Portfolio</span><span class="cl-arr">→</span></a>
+        <a class="clink" href="#"><span>◎</span><span>LinkedIn Profile</span><span class="cl-arr">→</span></a>
+      </div>
+      <div class="cform">
+                <form method="post" action="{{ url_for('public.contact') }}">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                      <div class="crow">
+                        <div class="cf">
+                          <label>Name</label>
+                          <input type="text" name="name" placeholder="Your name" required>
+                        </div>
+
+                        <div class="cf">
+                          <label>Email</label>
+                          <input type="email" name="email" placeholder="you@email.com" required>
+                        </div>
+                      </div>
+
+                      <div class="cf">
+                        <label>Project Type</label>
+                        <input type="text" name="project_type" placeholder="Web app, brand film, motion reel...">
+                      </div>
+
+                      <div class="cf">
+                        <label>Message</label>
+                        <textarea name="message" placeholder="Tell me about your vision..." required></textarea>
+                      </div>
+
+                      <button type="submit" class="csend">Send Message →</button>
+                    </form>
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

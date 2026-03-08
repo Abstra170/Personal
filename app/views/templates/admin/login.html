@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#000;--surface:#111;--surface2:#1a1a1a;--txt:#f5f5f7;--mu:#6e6e73;--c:#0a84ff;--c2:#ff375f;--g:#32d74b;--bd:rgba(255,255,255,.1);--f:-apple-system,'SF Pro Display','Inter',sans-serif}
+body{background:var(--bg);color:var(--txt);font-family:var(--f);display:flex;align-items:center;justify-content:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:380px;padding:20px}
+.logo{font-size:26px;font-weight:800;letter-spacing:-0.04em;text-align:center;margin-bottom:6px}
+.logo span{color:var(--c)}
+.sub{text-align:center;font-size:13px;color:var(--mu);margin-bottom:32px}
+.card{background:var(--surface);border:1px solid var(--bd);border-radius:16px;padding:32px}
+.err{background:rgba(255,55,95,.1);border:1px solid rgba(255,55,95,.25);color:var(--c2);padding:12px 14px;border-radius:10px;font-size:14px;margin-bottom:16px;text-align:center;line-height:1.5}
+.locked-msg{background:rgba(255,55,95,.06);border:1px solid rgba(255,55,95,.2);color:var(--c2);padding:16px;border-radius:10px;text-align:center;font-size:14px;line-height:1.7}
+.locked-msg .lock-icon{font-size:28px;margin-bottom:8px;display:block}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:13px;font-weight:500;color:var(--mu);margin-bottom:6px}
+.fg input{width:100%;background:var(--surface2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;color:var(--txt);font-family:var(--f);font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}
+.fg input:focus{border-color:var(--c);box-shadow:0 0 0 3px rgba(10,132,255,.1)}
+.fg input::placeholder{color:var(--mu)}
+.fg input:disabled{opacity:.4;cursor:not-allowed}
+.btn{width:100%;padding:13px;background:var(--c);color:#fff;border:none;border-radius:980px;font-family:var(--f);font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:8px}
+.btn:hover:not(:disabled){opacity:.85;transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.back{display:block;text-align:center;margin-top:20px;font-size:13px;color:var(--mu);text-decoration:none}
+.back:hover{color:var(--c)}
+.totp-note{text-align:center;font-size:12px;color:var(--mu);margin-top:14px;line-height:1.55}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Alex<span>.</span>Morgan</div>
+  <div class="sub">Admin — Private Access Only</div>
+  <div class="card">
+    {% if locked %}
+    <div class="locked-msg">
+      <span class="lock-icon">🔒</span>
+      {{ error }}
+      <br><small>Multiple failed login attempts detected.</small>
+    </div>
+    {% else %}
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="fg">
+          <label>Username</label>
+          <input type="text" name="username" autocomplete="username" required autofocus>
+        </div>
+        <div class="fg">
+          <label>Password</label>
+          <input type="password" name="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn">Sign In →</button>
+      </form>
+      <div class="totp-note">🔐 Two-factor authentication will be required next.</div>
+    {% endif %}
+  </div>
+  <a href="{{ url_for('public.index') }}" class="back">← Back to site</a>
+</div>
+</body>
+</html>
