@@ -10,7 +10,9 @@ from app.models.content import Project, Video
 from app.security import (
     check_admin_ip, get_client_ip,
     is_ip_locked, record_failed_login, clear_failed_attempts, lockout_remaining,
-    verify_totp, set_awaiting_2fa, get_awaiting_2fa, clear_2fa_session,
+    set_awaiting_2fa, get_awaiting_2fa, clear_2fa_session,
+    email_otp_is_enabled, generate_otp, send_otp_email,
+    store_otp_in_session, verify_email_otp,
 )
 
 admin_bp = Blueprint("admin", __name__)
@@ -59,12 +61,6 @@ def detect_platform(url):
     return "other"
 
 
-def totp_is_enabled():
-    secret = os.environ.get("TOTP_SECRET", "").strip()
-    enabled = os.environ.get("TOTP_ENABLED", "true").lower() == "true"
-    return enabled and bool(secret)
-
-
 # ─────────────────────────────────────────────────────────────────
 # STEP 1 — PASSWORD LOGIN
 # ─────────────────────────────────────────────────────────────────
@@ -76,7 +72,6 @@ def login():
 
     ip = get_client_ip()
 
-    # IP lockout check
     if is_ip_locked(ip):
         remaining = lockout_remaining(ip)
         mins = remaining // 60
@@ -94,10 +89,16 @@ def login():
         if user and check_password_hash(user.password_hash, password):
             clear_failed_attempts(ip)
 
-            if totp_is_enabled():
-                # Park credentials, redirect to 2FA step
-                set_awaiting_2fa(user.id)
-                return redirect(url_for("admin.verify_2fa"))
+            if email_otp_is_enabled():
+                # Generate OTP, email it, redirect to verification
+                otp = generate_otp()
+                ok, err = send_otp_email(otp)
+                if not ok:
+                    error = f"Could not send OTP email: {err}"
+                else:
+                    set_awaiting_2fa(user.id)
+                    store_otp_in_session(otp)
+                    return redirect(url_for("admin.verify_2fa"))
             else:
                 # No 2FA — log in directly
                 login_user(user, remember=False)
@@ -110,14 +111,13 @@ def login():
                 remaining = lockout_remaining(ip)
                 error = f"Too many failed attempts. Locked for {remaining // 60}m {remaining % 60}s."
             else:
-                # Generic message — don't reveal which field was wrong
                 error = "Invalid credentials."
 
     return render_template("admin/login.html", error=error, locked=False)
 
 
 # ─────────────────────────────────────────────────────────────────
-# STEP 2 — TOTP VERIFICATION
+# STEP 2 — EMAIL OTP VERIFICATION
 # ─────────────────────────────────────────────────────────────────
 
 @admin_bp.route("/verify", methods=["GET", "POST"])
@@ -131,12 +131,28 @@ def verify_2fa():
         clear_2fa_session()
         return redirect(url_for("admin.login"))
 
+    # Destination email (masked) shown on the verification page
+    mail_receiver = os.environ.get("CONTACT_RECEIVER",
+                    os.environ.get("MAIL_USERNAME", "your email"))
+
     error = None
     if request.method == "POST":
-        code = request.form.get("code", "").strip().replace(" ", "")
-        totp_secret = os.environ.get("TOTP_SECRET", "")
+        # Handle resend request
+        if request.form.get("action") == "resend":
+            otp = generate_otp()
+            ok, err = send_otp_email(otp)
+            if ok:
+                store_otp_in_session(otp)
+                # Reset the 2FA timestamp so the 5-min window restarts
+                session["_2fa_timestamp"] = __import__("time").time()
+                flash("A new code has been sent to your email.", "info")
+            else:
+                flash(f"Could not resend: {err}", "danger")
+            return redirect(url_for("admin.verify_2fa"))
 
-        if verify_totp(totp_secret, code):
+        code = request.form.get("code", "").strip().replace(" ", "")
+
+        if verify_email_otp(code):
             user = User.query.get(user_id)
             if not user:
                 clear_2fa_session()
@@ -152,9 +168,11 @@ def verify_2fa():
             if locked:
                 clear_2fa_session()
                 return redirect(url_for("admin.login"))
-            error = "Invalid code. Check your authenticator app."
+            error = "Invalid or expired code. Check your email."
 
-    return render_template("admin/verify_2fa.html", error=error)
+    return render_template("admin/verify_2fa.html",
+                           error=error,
+                           email=mail_receiver)
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -181,7 +199,7 @@ def dashboard():
         total_videos=Video.query.count(),
         recent_projects=Project.query.order_by(Project.created_at.desc()).limit(5).all(),
         recent_videos=Video.query.order_by(Video.created_at.desc()).limit(5).all(),
-        totp_active=totp_is_enabled(),
+        totp_active=email_otp_is_enabled(),
         client_ip=get_client_ip(),
     )
 
@@ -389,7 +407,7 @@ def settings():
             return redirect(url_for("admin.dashboard"))
     return render_template("admin/settings.html",
         error=error,
-        totp_active=totp_is_enabled(),
+        totp_active=email_otp_is_enabled(),
         last_login=current_user.last_login_at,
         last_ip=current_user.last_login_ip,
         login_count=current_user.login_count,

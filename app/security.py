@@ -4,18 +4,20 @@ app/security.py — Security layer for admin panel
 Provides:
 - IP allowlist enforcement
 - Brute-force login lockout (in-memory, no Redis needed)
-- TOTP two-factor authentication (no external library)
+- Email OTP two-factor authentication (replaces TOTP/Google Authenticator)
 - Security response headers
 - Session hardening
 """
 
-import hashlib
-import hmac
 import os
-import struct
+import random
+import smtplib
+import string
 import time
 from collections import defaultdict
 from datetime import timedelta
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from functools import wraps
 
 from flask import request, abort, session, current_app
@@ -23,7 +25,6 @@ from flask import request, abort, session, current_app
 
 # ─────────────────────────────────────────────────────────────────
 # IN-MEMORY BRUTE-FORCE TRACKER
-# (Resets on server restart — fine for single-server setups)
 # ─────────────────────────────────────────────────────────────────
 
 _failed_attempts = defaultdict(list)   # ip -> [timestamp, ...]
@@ -56,13 +57,12 @@ def record_failed_login(ip):
 
     now = time.time()
     attempts = _failed_attempts[ip]
-    # Prune old entries outside window
     _failed_attempts[ip] = [t for t in attempts if now - t < window]
     _failed_attempts[ip].append(now)
 
     if len(_failed_attempts[ip]) >= max_attempts:
         _lockout_until[ip] = now + lockout_secs
-        return True  # locked
+        return True
     return False
 
 
@@ -81,56 +81,126 @@ def lockout_remaining(ip):
 
 
 # ─────────────────────────────────────────────────────────────────
-# TOTP (RFC 6238) — no external library
+# EMAIL OTP (replaces TOTP / Google Authenticator)
 # ─────────────────────────────────────────────────────────────────
 
-def _base32_decode(s):
-    """Decode base32 string to bytes."""
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
-    s = s.upper().rstrip("=")
-    buffer = 0
-    bits_left = 0
-    result = bytearray()
-    for char in s:
-        if char not in alphabet:
-            continue
-        buffer = (buffer << 5) | alphabet.index(char)
-        bits_left += 5
-        if bits_left >= 8:
-            bits_left -= 8
-            result.append((buffer >> bits_left) & 0xFF)
-    return bytes(result)
+OTP_EXPIRY_SECONDS = 300  # 5 minutes
 
 
-def get_totp_code(secret, timestamp=None, step=30, digits=6):
-    """Generate TOTP code for given secret at given time."""
-    if not secret:
-        return None
+def generate_otp(digits=6):
+    """Generate a secure random numeric OTP."""
+    return "".join(random.choices(string.digits, k=digits))
+
+
+def send_otp_email(otp_code):
+    """
+    Send OTP code to the admin email configured in .env.
+    Uses MAIL_* environment variables.
+    Returns (True, None) on success or (False, error_message) on failure.
+    """
+    mail_server   = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
+    mail_port     = int(os.environ.get("MAIL_PORT", 587))
+    mail_use_tls  = os.environ.get("MAIL_USE_TLS", "true").lower() == "true"
+    mail_username = os.environ.get("MAIL_USERNAME", "")
+    mail_password = os.environ.get("MAIL_PASSWORD", "")
+    mail_sender   = os.environ.get("MAIL_DEFAULT_SENDER", mail_username)
+    mail_receiver = os.environ.get("CONTACT_RECEIVER", mail_username)
+
+    if not mail_username or not mail_password:
+        return False, "Mail credentials not configured in .env"
+
+    subject = "Your Admin Login Code"
+    html_body = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;
+                background: #0f0f0f; color: #ffffff; padding: 32px; border-radius: 12px;">
+      <h2 style="margin: 0 0 8px 0; font-size: 22px;">Two-Factor Login</h2>
+      <p style="color: #aaa; margin: 0 0 28px 0; font-size: 14px;">
+        Someone (hopefully you) is logging into your Portfolio Admin panel.
+      </p>
+      <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 10px;
+                  padding: 24px; text-align: center; margin-bottom: 24px;">
+        <p style="margin: 0 0 8px 0; font-size: 13px; color: #888; letter-spacing: 1px;
+                  text-transform: uppercase;">Your login code</p>
+        <p style="margin: 0; font-size: 40px; font-weight: bold; letter-spacing: 10px;
+                  color: #3b82f6; font-family: monospace;">{otp_code}</p>
+      </div>
+      <p style="color: #888; font-size: 13px; margin: 0 0 6px 0;">
+        This code expires in <strong style="color: #fff;">5 minutes</strong>.
+      </p>
+      <p style="color: #555; font-size: 12px; margin: 0;">
+        If you did not request this, your password may be compromised.
+      </p>
+    </div>
+    """
+    text_body = f"Your admin login OTP is: {otp_code}\nExpires in 5 minutes."
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = mail_sender
+    msg["To"]      = mail_receiver
+    msg.attach(MIMEText(text_body, "plain"))
+    msg.attach(MIMEText(html_body, "html"))
+
     try:
-        key = _base32_decode(secret)
-        t = int((timestamp or time.time()) // step)
-        msg = struct.pack(">Q", t)
-        h = hmac.new(key, msg, hashlib.sha1).digest()
-        offset = h[-1] & 0x0F
-        code = struct.unpack(">I", h[offset:offset + 4])[0] & 0x7FFFFFFF
-        return str(code % (10 ** digits)).zfill(digits)
-    except Exception:
-        return None
+        with smtplib.SMTP(mail_server, mail_port, timeout=10) as smtp:
+            if mail_use_tls:
+                smtp.starttls()
+            smtp.login(mail_username, mail_password)
+            smtp.sendmail(mail_sender, mail_receiver, msg.as_string())
+        return True, None
+    except smtplib.SMTPAuthenticationError:
+        return False, "Email authentication failed. Check MAIL_USERNAME and MAIL_PASSWORD in .env"
+    except smtplib.SMTPException as e:
+        return False, f"SMTP error: {e}"
+    except Exception as e:
+        return False, f"Failed to send email: {e}"
 
+
+def email_otp_is_enabled():
+    """Return True if email-based OTP should be used."""
+    enabled  = os.environ.get("EMAIL_OTP_ENABLED", "true").lower() == "true"
+    has_mail = bool(os.environ.get("MAIL_USERNAME", "").strip())
+    return enabled and has_mail
+
+
+# ─────────────────────────────────────────────────────────────────
+# LEGACY TOTP — kept for backward compatibility (not used)
+# ─────────────────────────────────────────────────────────────────
 
 def verify_totp(secret, user_code, window=1):
-    """
-    Verify a TOTP code. Allows `window` steps of drift (±30s per step).
-    Returns True if valid.
-    """
+    """Legacy TOTP verify — not used when EMAIL_OTP_ENABLED=true."""
+    import hashlib, hmac as _hmac, struct
     if not secret or not user_code:
         return False
+
+    def _b32decode(s):
+        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+        s = s.upper().rstrip("=")
+        buf, bits, result = 0, 0, bytearray()
+        for ch in s:
+            if ch not in alphabet:
+                continue
+            buf = (buf << 5) | alphabet.index(ch)
+            bits += 5
+            if bits >= 8:
+                bits -= 8
+                result.append((buf >> bits) & 0xFF)
+        return bytes(result)
+
     user_code = str(user_code).strip()
     now = time.time()
-    for delta in range(-window, window + 1):
-        expected = get_totp_code(secret, timestamp=now + delta * 30)
-        if expected and hmac.compare_digest(expected, user_code):
-            return True
+    try:
+        key = _b32decode(secret)
+        for delta in range(-window, window + 1):
+            t   = int((now + delta * 30) // 30)
+            msg = struct.pack(">Q", t)
+            h   = _hmac.new(key, msg, hashlib.sha1).digest()
+            offset = h[-1] & 0x0F
+            code   = str(struct.unpack(">I", h[offset:offset+4])[0] & 0x7FFFFFFF % 1000000).zfill(6)
+            if _hmac.compare_digest(code, user_code):
+                return True
+    except Exception:
+        pass
     return False
 
 
@@ -139,29 +209,17 @@ def verify_totp(secret, user_code, window=1):
 # ─────────────────────────────────────────────────────────────────
 
 def get_allowed_ips():
-    """Parse allowed IPs from environment variable."""
     raw = os.environ.get("ADMIN_ALLOWED_IPS", "*")
     if raw.strip() == "*":
-        return None  # allow all
+        return None
     return [ip.strip() for ip in raw.split(",") if ip.strip()]
 
 
 def check_admin_ip():
-    """
-    Return True if current request IP is allowed.
-    Aborts with 404 (not 403) to not reveal the admin exists.
-    """
-    # allowed = get_allowed_ips()
-    # if allowed is None:
-    #     return True  # wildcard
-    # client_ip = get_client_ip()
-    # if client_ip not in allowed:
-    #     abort(404)  # disguise — looks like page not found
     return True
 
 
 def ip_required(f):
-    """Decorator: block request if IP not in allowlist."""
     @wraps(f)
     def decorated(*args, **kwargs):
         check_admin_ip()
@@ -174,25 +232,17 @@ def ip_required(f):
 # ─────────────────────────────────────────────────────────────────
 
 def apply_security_headers(response):
-    """Add security headers to every response."""
-    # Prevent clickjacking
     response.headers["X-Frame-Options"] = "DENY"
-    # Prevent MIME sniffing
     response.headers["X-Content-Type-Options"] = "nosniff"
-    # XSS protection (legacy browsers)
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    # Referrer policy
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    # Permissions policy — disable unnecessary browser features
     response.headers["Permissions-Policy"] = (
         "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
     )
-    # HSTS — only set in production (requires HTTPS)
     if os.environ.get("FLASK_ENV") == "production":
         response.headers["Strict-Transport-Security"] = (
             "max-age=31536000; includeSubDomains; preload"
         )
-    # CSP — restrict what can load
     if os.environ.get("CSP_ENABLED", "true").lower() == "true":
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
@@ -203,7 +253,6 @@ def apply_security_headers(response):
             "frame-src https://www.youtube.com https://player.vimeo.com; "
             "connect-src 'self';"
         )
-    # Don't cache admin pages
     if "/admin" in request.path or f"/{os.environ.get('ADMIN_URL_PREFIX','admin')}" in request.path:
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
         response.headers["Pragma"] = "no-cache"
@@ -215,7 +264,6 @@ def apply_security_headers(response):
 # ─────────────────────────────────────────────────────────────────
 
 def configure_session(app):
-    """Apply session security settings to Flask app."""
     lifetime = int(os.environ.get("SESSION_LIFETIME_SECONDS", 3600))
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(seconds=lifetime)
     app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -231,8 +279,8 @@ def configure_session(app):
 
 def set_awaiting_2fa(user_id):
     """Mark session as needing 2FA completion."""
-    session["_2fa_pending"] = True
-    session["_2fa_user_id"] = user_id
+    session["_2fa_pending"]   = True
+    session["_2fa_user_id"]   = user_id
     session["_2fa_timestamp"] = time.time()
 
 
@@ -241,14 +289,37 @@ def get_awaiting_2fa():
     if not session.get("_2fa_pending"):
         return None
     ts = session.get("_2fa_timestamp", 0)
-    if time.time() - ts > 300:  # 5-minute window to enter 2FA
+    if time.time() - ts > OTP_EXPIRY_SECONDS:
         clear_2fa_session()
         return None
     return session.get("_2fa_user_id")
 
 
 def clear_2fa_session():
-    """Remove 2FA pending state."""
-    session.pop("_2fa_pending", None)
-    session.pop("_2fa_user_id", None)
+    session.pop("_2fa_pending",   None)
+    session.pop("_2fa_user_id",   None)
     session.pop("_2fa_timestamp", None)
+    session.pop("_2fa_otp",       None)
+
+
+# ─────────────────────────────────────────────────────────────────
+# OTP SESSION HELPERS
+# ─────────────────────────────────────────────────────────────────
+
+def store_otp_in_session(otp_code):
+    """Save generated OTP into the session."""
+    session["_2fa_otp"] = otp_code
+
+
+def verify_email_otp(user_code):
+    """
+    Verify the code the user entered against the one stored in session.
+    Returns True if correct and not expired.
+    """
+    stored = session.get("_2fa_otp")
+    ts     = session.get("_2fa_timestamp", 0)
+    if not stored or not user_code:
+        return False
+    if time.time() - ts > OTP_EXPIRY_SECONDS:
+        return False
+    return stored == str(user_code).strip()

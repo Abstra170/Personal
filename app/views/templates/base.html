@@ -30,52 +30,39 @@ img{display:block;max-width:100%}
 @keyframes af{0%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.08)}100%{transform:translate(-20px,40px) scale(.95)}}
 #grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--bd2) 1px,transparent 1px),linear-gradient(90deg,var(--bd2) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
 
-/* ===================== NAV ===================== */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:500;
-  padding:0 52px;height:52px;
-  display:flex;justify-content:space-between;align-items:center;
-  transition:background .4s;
-}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:0 52px;height:52px;display:flex;justify-content:space-between;align-items:center;transition:background .4s}
 nav.stuck{background:rgba(0,0,0,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd2)}
 [data-theme="light"] nav.stuck{background:rgba(245,245,247,.85)}
-.nav-logo{font-size:17px;font-weight:700;letter-spacing:-0.02em;color:var(--txt);text-decoration:none;flex-shrink:0}
+.nav-logo{font-size:17px;font-weight:700;letter-spacing:-0.02em;color:var(--txt);text-decoration:none}
 .nav-logo span{color:var(--c)}
-
-/* desktop right section */
 .nav-r{display:flex;align-items:center;gap:24px}
 .nav-links{display:flex;gap:20px;list-style:none}
 .nav-links a{font-size:13px;font-weight:500;color:var(--mu);text-decoration:none;letter-spacing:-0.01em;transition:color .2s}
 .nav-links a:hover,.nav-links a.active{color:var(--txt)}
 
-/* theme toggle */
+/* THEME TOGGLE — desktop size */
 .theme-btn{width:40px;height:22px;border-radius:99px;border:1px solid var(--bd);background:var(--surface);cursor:pointer;position:relative;display:flex;align-items:center;padding:2px;transition:background .3s;flex-shrink:0}
 .theme-btn::after{content:'';width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--c),var(--c3));transition:transform .3s var(--ease);box-shadow:0 0 6px var(--c)}
 [data-theme="light"] .theme-btn::after{transform:translateX(18px);background:linear-gradient(135deg,#ff9500,#ffcc00);box-shadow:0 0 6px #ffcc00}
 
-.nav-cta{padding:7px 18px;background:var(--c);color:#fff;border-radius:980px;font-size:13px;font-weight:600;letter-spacing:-0.01em;text-decoration:none;transition:opacity .2s,transform .2s;white-space:nowrap}
+.nav-cta{padding:7px 18px;background:var(--c);color:#fff;border-radius:980px;font-size:13px;font-weight:600;letter-spacing:-0.01em;text-decoration:none;transition:opacity .2s,transform .2s}
 .nav-cta:hover{opacity:.85;transform:translateY(-1px)}
 
-/* ---- HAMBURGER ---- */
-.ham-btn{
-  display:none;
-  flex-direction:column;justify-content:center;align-items:center;
-  width:36px;height:36px;gap:5px;
-  background:none;border:1px solid var(--bd);border-radius:8px;cursor:pointer;
-  flex-shrink:0;
-}
+/* HAMBURGER */
+.ham-btn{display:none;flex-direction:column;justify-content:center;align-items:center;width:36px;height:36px;gap:5px;background:none;border:1px solid var(--bd);border-radius:8px;cursor:pointer;flex-shrink:0}
 .ham-btn span{display:block;width:18px;height:2px;background:var(--txt);border-radius:2px;transition:transform .3s,opacity .3s}
 .ham-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .ham-btn.open span:nth-child(2){opacity:0}
 .ham-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
-/* ---- MOBILE DRAWER ---- */
+/* MOBILE DRAWER */
 .mobile-menu{
   display:none;
   position:fixed;top:52px;left:0;right:0;z-index:490;
   background:rgba(10,10,10,.97);backdrop-filter:blur(24px);
   border-bottom:1px solid var(--bd2);
-  padding:24px 22px;
+  padding:24px 22px 28px;
   flex-direction:column;gap:6px;
   transform:translateY(-10px);opacity:0;
   transition:transform .3s var(--ease),opacity .3s var(--ease);
@@ -83,20 +70,61 @@ nav.stuck{background:rgba(0,0,0,.8);backdrop-filter:blur(20px);border-bottom:1px
 }
 [data-theme="light"] .mobile-menu{background:rgba(245,245,247,.97)}
 .mobile-menu.open{transform:translateY(0);opacity:1;pointer-events:all}
+
 .mobile-menu a{
   font-size:17px;font-weight:600;color:var(--txt);text-decoration:none;
   padding:12px 0;border-bottom:1px solid var(--bd2);
   display:flex;justify-content:space-between;align-items:center;
   letter-spacing:-0.02em;
 }
-.mobile-menu a:last-of-type{border-bottom:none}
 .mobile-menu a.active{color:var(--c)}
 .mobile-menu a::after{content:'→';color:var(--mu);font-size:14px}
+
+/* Footer row in drawer */
 .mobile-menu-foot{
   display:flex;align-items:center;justify-content:space-between;
-  margin-top:16px;padding-top:16px;border-top:1px solid var(--bd2);
+  margin-top:18px;padding-top:18px;border-top:1px solid var(--bd2);
+  gap:12px;
 }
-.mob-hire{padding:10px 24px;background:var(--c);color:#fff;border-radius:980px;font-size:14px;font-weight:600;text-decoration:none}
+
+/* THEME TOGGLE — bigger touch-friendly version inside drawer */
+.mob-theme-btn{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);
+  border:1px solid var(--bd);
+  border-radius:980px;
+  padding:10px 16px 10px 12px;
+  cursor:pointer;
+  min-width:130px;
+  transition:border-color .2s;
+}
+.mob-theme-btn:hover{border-color:var(--c)}
+.mob-theme-icon{
+  /* the actual sliding pill — larger than desktop */
+  width:52px;height:28px;border-radius:99px;
+  border:1px solid var(--bd);background:var(--surface2);
+  position:relative;display:flex;align-items:center;padding:3px;
+  flex-shrink:0;transition:background .3s;
+}
+.mob-theme-icon::after{
+  content:'';width:20px;height:20px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c),var(--c3));
+  transition:transform .3s var(--ease);box-shadow:0 0 8px var(--c);
+}
+[data-theme="light"] .mob-theme-icon::after{
+  transform:translateX(24px);
+  background:linear-gradient(135deg,#ff9500,#ffcc00);
+  box-shadow:0 0 8px #ffcc00;
+}
+.mob-theme-text{font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap}
+
+.mob-hire{
+  padding:12px 22px;background:var(--c);color:#fff;
+  border-radius:980px;font-size:15px;font-weight:700;
+  text-decoration:none;white-space:nowrap;
+  transition:opacity .2s;
+}
+.mob-hire:hover{opacity:.88;color:#fff}
 
 /* PAGE WRAP */
 main{z-index:1;padding-top:10px}
@@ -190,47 +218,38 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
 
 /* ===================== MOBILE ===================== */
 @media(max-width:768px){
-  /* NAV */
-  nav{padding:0 16px;height:52px}
+  nav{padding:0 20px;height:52px}
   .nav-links{display:none}
   .nav-cta{display:none}
   .theme-btn{display:none}
   .ham-btn{display:flex}
   .mobile-menu{display:flex}
 
-  /* SECTIONS */
   .sec{padding:60px 16px}
   .sec-h{margin-bottom:28px}
-
-  /* GRIDS */
   .grid-3{grid-template-columns:1fr}
   .grid-2{grid-template-columns:1fr}
 
-  /* FILTER BAR — scrollable row */
   .filter-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
   .filter-bar::-webkit-scrollbar{display:none}
   .f-pill{flex-shrink:0}
 
-  /* CARDS */
   .card-title{font-size:16px}
   .card-body{padding:16px}
 
-  /* FOOTER */
   footer{padding:40px 16px 24px}
   .ft-grid{grid-template-columns:1fr;gap:28px}
   .ft-brand p{max-width:100%}
   .ft-bottom{flex-direction:column;gap:8px;text-align:center}
 
-  /* BUTTONS */
   .btn{font-size:14px;padding:11px 20px}
-
-  /* FLASH */
   .flash-wrap{right:12px;left:12px;max-width:100%}
 }
 
 @media(max-width:400px){
   .nav-logo{font-size:15px}
   .sec{padding:48px 14px}
+  .mob-theme-btn{min-width:auto}
 }
 </style>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -267,7 +286,6 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
     </ul>
     <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"></button>
     <a href="{{ url_for('public.contact') }}" class="nav-cta">Hire Me</a>
-    <!-- Hamburger (mobile only) -->
     <button class="ham-btn" id="hamBtn" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -276,18 +294,24 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
 
 <!-- MOBILE DRAWER -->
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-  <a href="{{ url_for('public.index') }}" class="{{ 'active' if request.endpoint=='public.index' }}">Home</a>
+  <a href="{{ url_for('public.index') }}"    class="{{ 'active' if request.endpoint=='public.index' }}">Home</a>
   <a href="{{ url_for('public.projects') }}" class="{{ 'active' if 'project' in request.endpoint }}">Projects</a>
-  <a href="{{ url_for('public.videos') }}" class="{{ 'active' if 'video' in request.endpoint }}">Videos</a>
-  <a href="{{ url_for('public.about') }}" class="{{ 'active' if request.endpoint=='public.about' }}">About</a>
-  <a href="{{ url_for('public.contact') }}" class="{{ 'active' if request.endpoint=='public.contact' }}">Contact</a>
+  <a href="{{ url_for('public.videos') }}"   class="{{ 'active' if 'video' in request.endpoint }}">Videos</a>
+  <a href="{{ url_for('public.about') }}"    class="{{ 'active' if request.endpoint=='public.about' }}">About</a>
+  <a href="{{ url_for('public.contact') }}"  class="{{ 'active' if request.endpoint=='public.contact' }}">Contact</a>
+
+  <!-- Bottom row: big theme toggle + Hire Me -->
   <div class="mobile-menu-foot">
-    <button class="theme-btn" id="themeBtnMob" aria-label="Toggle theme"></button>
+    <!-- Tappable pill-button that toggles theme -->
+    <button class="mob-theme-btn" id="themeBtnMob" aria-label="Toggle theme">
+      <div class="mob-theme-icon"></div>
+      <span class="mob-theme-text" id="themeLabel">Dark mode</span>
+    </button>
     <a href="{{ url_for('public.contact') }}" class="mob-hire">Hire Me →</a>
   </div>
 </div>
 
-<!-- YT MODAL (shared) -->
+<!-- YT MODAL -->
 <div class="yt-modal" id="ytModal">
   <div class="yt-inner">
     <button class="yt-close" id="ytClose">✕ Close</button>
@@ -342,55 +366,69 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
 </footer>
 
 <script>
-// Theme toggle — syncs both desktop and mobile buttons
-var html=document.documentElement;
-function setTheme(next){html.setAttribute('data-theme',next);localStorage.setItem('theme',next)}
-document.getElementById('themeBtn').addEventListener('click',function(){setTheme(html.getAttribute('data-theme')==='dark'?'light':'dark')});
-var themeMob=document.getElementById('themeBtnMob');
-if(themeMob) themeMob.addEventListener('click',function(){setTheme(html.getAttribute('data-theme')==='dark'?'light':'dark')});
+// Theme
+var html = document.documentElement;
+function setTheme(next) {
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  var lbl = document.getElementById('themeLabel');
+  if (lbl) lbl.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+}
+// init label
+(function(){
+  var lbl = document.getElementById('themeLabel');
+  if (lbl) lbl.textContent = html.getAttribute('data-theme') === 'dark' ? 'Dark mode' : 'Light mode';
+})();
 
-// Nav sticky
-window.addEventListener('scroll',function(){
-  document.getElementById('nav').classList.toggle('stuck',window.scrollY>40);
+document.getElementById('themeBtn').addEventListener('click', function() {
+  setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+document.getElementById('themeBtnMob').addEventListener('click', function() {
+  setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 });
 
-// Hamburger menu
-var hamBtn=document.getElementById('hamBtn');
-var mobileMenu=document.getElementById('mobileMenu');
-var menuOpen=false;
-function toggleMenu(force){
-  menuOpen = typeof force !== 'undefined' ? force : !menuOpen;
+// Nav sticky
+window.addEventListener('scroll', function() {
+  document.getElementById('nav').classList.toggle('stuck', window.scrollY > 40);
+});
+
+// Hamburger
+var hamBtn = document.getElementById('hamBtn');
+var mobileMenu = document.getElementById('mobileMenu');
+var menuOpen = false;
+function toggleMenu(force) {
+  menuOpen = (typeof force !== 'undefined') ? force : !menuOpen;
   hamBtn.classList.toggle('open', menuOpen);
   mobileMenu.classList.toggle('open', menuOpen);
   hamBtn.setAttribute('aria-expanded', menuOpen);
   mobileMenu.setAttribute('aria-hidden', !menuOpen);
   document.body.style.overflow = menuOpen ? 'hidden' : '';
 }
-hamBtn.addEventListener('click',function(){toggleMenu()});
-// Close menu on link click
-mobileMenu.querySelectorAll('a').forEach(function(a){
-  a.addEventListener('click',function(){toggleMenu(false)});
+hamBtn.addEventListener('click', function() { toggleMenu(); });
+mobileMenu.querySelectorAll('a').forEach(function(a) {
+  a.addEventListener('click', function() { toggleMenu(false); });
 });
-// Close on outside tap
-document.addEventListener('click',function(e){
-  if(menuOpen && !mobileMenu.contains(e.target) && !hamBtn.contains(e.target)) toggleMenu(false);
+document.addEventListener('click', function(e) {
+  if (menuOpen && !mobileMenu.contains(e.target) && !hamBtn.contains(e.target)) toggleMenu(false);
 });
 
 // Reveal
-var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('vis')})},{threshold:.1});
-document.querySelectorAll('.rv').forEach(function(el){obs.observe(el)});
+var obs = new IntersectionObserver(function(e) {
+  e.forEach(function(x) { if (x.isIntersecting) x.target.classList.add('vis'); });
+}, { threshold: .1 });
+document.querySelectorAll('.rv').forEach(function(el) { obs.observe(el); });
 
 // YT Modal
-var modal=document.getElementById('ytModal'),frame=document.getElementById('ytFrame');
-document.getElementById('ytClose').addEventListener('click',function(){modal.classList.remove('open');frame.src=''});
-modal.addEventListener('click',function(e){if(e.target===modal){modal.classList.remove('open');frame.src=''}});
-function openVideo(url){frame.src=url;modal.classList.add('open')}
+var modal = document.getElementById('ytModal'), frame = document.getElementById('ytFrame');
+document.getElementById('ytClose').addEventListener('click', function() { modal.classList.remove('open'); frame.src = ''; });
+modal.addEventListener('click', function(e) { if (e.target === modal) { modal.classList.remove('open'); frame.src = ''; } });
+function openVideo(url) { frame.src = url; modal.classList.add('open'); }
 
-// Aurora parallax (skip on touch devices to save battery)
-if(window.matchMedia('(hover:hover)').matches){
-  document.addEventListener('mousemove',function(e){
-    var x=(e.clientX/window.innerWidth-.5)*30,y=(e.clientY/window.innerHeight-.5)*30;
-    document.querySelectorAll('.ab').forEach(function(b,i){var f=(i+1)*.4;b.style.transform='translate('+(x*f)+'px,'+(y*f)+'px)'});
+// Aurora parallax (desktop only)
+if (window.matchMedia('(hover:hover)').matches) {
+  document.addEventListener('mousemove', function(e) {
+    var x = (e.clientX / window.innerWidth - .5) * 30, y = (e.clientY / window.innerHeight - .5) * 30;
+    document.querySelectorAll('.ab').forEach(function(b, i) { var f = (i+1)*.4; b.style.transform = 'translate('+(x*f)+'px,'+(y*f)+'px)'; });
   });
 }
 {% block extra_js %}{% endblock %}
