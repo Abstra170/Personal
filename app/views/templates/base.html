@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Apply saved theme instantly before any CSS renders (prevents flash) -->
 <script>
 (function(){
   var t=localStorage.getItem('theme');
@@ -31,21 +30,73 @@ img{display:block;max-width:100%}
 @keyframes af{0%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.08)}100%{transform:translate(-20px,40px) scale(.95)}}
 #grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--bd2) 1px,transparent 1px),linear-gradient(90deg,var(--bd2) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:0 52px;height:52px;display:flex;justify-content:space-between;align-items:center;transition:background .4s}
+/* ===================== NAV ===================== */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:0 52px;height:52px;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:background .4s;
+}
 nav.stuck{background:rgba(0,0,0,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd2)}
 [data-theme="light"] nav.stuck{background:rgba(245,245,247,.85)}
-.nav-logo{font-size:17px;font-weight:700;letter-spacing:-0.02em;color:var(--txt);text-decoration:none}
+.nav-logo{font-size:17px;font-weight:700;letter-spacing:-0.02em;color:var(--txt);text-decoration:none;flex-shrink:0}
 .nav-logo span{color:var(--c)}
+
+/* desktop right section */
 .nav-r{display:flex;align-items:center;gap:24px}
 .nav-links{display:flex;gap:20px;list-style:none}
 .nav-links a{font-size:13px;font-weight:500;color:var(--mu);text-decoration:none;letter-spacing:-0.01em;transition:color .2s}
 .nav-links a:hover,.nav-links a.active{color:var(--txt)}
-.theme-btn{width:40px;height:22px;border-radius:99px;border:1px solid var(--bd);background:var(--surface);cursor:pointer;position:relative;display:flex;align-items:center;padding:2px;transition:background .3s}
+
+/* theme toggle */
+.theme-btn{width:40px;height:22px;border-radius:99px;border:1px solid var(--bd);background:var(--surface);cursor:pointer;position:relative;display:flex;align-items:center;padding:2px;transition:background .3s;flex-shrink:0}
 .theme-btn::after{content:'';width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--c),var(--c3));transition:transform .3s var(--ease);box-shadow:0 0 6px var(--c)}
 [data-theme="light"] .theme-btn::after{transform:translateX(18px);background:linear-gradient(135deg,#ff9500,#ffcc00);box-shadow:0 0 6px #ffcc00}
-.nav-cta{padding:7px 18px;background:var(--c);color:#fff;border-radius:980px;font-size:13px;font-weight:600;letter-spacing:-0.01em;text-decoration:none;transition:opacity .2s,transform .2s}
+
+.nav-cta{padding:7px 18px;background:var(--c);color:#fff;border-radius:980px;font-size:13px;font-weight:600;letter-spacing:-0.01em;text-decoration:none;transition:opacity .2s,transform .2s;white-space:nowrap}
 .nav-cta:hover{opacity:.85;transform:translateY(-1px)}
+
+/* ---- HAMBURGER ---- */
+.ham-btn{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  width:36px;height:36px;gap:5px;
+  background:none;border:1px solid var(--bd);border-radius:8px;cursor:pointer;
+  flex-shrink:0;
+}
+.ham-btn span{display:block;width:18px;height:2px;background:var(--txt);border-radius:2px;transition:transform .3s,opacity .3s}
+.ham-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.ham-btn.open span:nth-child(2){opacity:0}
+.ham-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ---- MOBILE DRAWER ---- */
+.mobile-menu{
+  display:none;
+  position:fixed;top:52px;left:0;right:0;z-index:490;
+  background:rgba(10,10,10,.97);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--bd2);
+  padding:24px 22px;
+  flex-direction:column;gap:6px;
+  transform:translateY(-10px);opacity:0;
+  transition:transform .3s var(--ease),opacity .3s var(--ease);
+  pointer-events:none;
+}
+[data-theme="light"] .mobile-menu{background:rgba(245,245,247,.97)}
+.mobile-menu.open{transform:translateY(0);opacity:1;pointer-events:all}
+.mobile-menu a{
+  font-size:17px;font-weight:600;color:var(--txt);text-decoration:none;
+  padding:12px 0;border-bottom:1px solid var(--bd2);
+  display:flex;justify-content:space-between;align-items:center;
+  letter-spacing:-0.02em;
+}
+.mobile-menu a:last-of-type{border-bottom:none}
+.mobile-menu a.active{color:var(--c)}
+.mobile-menu a::after{content:'→';color:var(--mu);font-size:14px}
+.mobile-menu-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:16px;padding-top:16px;border-top:1px solid var(--bd2);
+}
+.mob-hire{padding:10px 24px;background:var(--c);color:#fff;border-radius:980px;font-size:14px;font-weight:600;text-decoration:none}
 
 /* PAGE WRAP */
 main{z-index:1;padding-top:10px}
@@ -94,7 +145,7 @@ main{z-index:1;padding-top:10px}
 .btn-s{background:var(--surface);color:var(--txt);border:1px solid var(--bd)}
 
 /* FLASH */
-.flash-wrap{position:fixed;top:60px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px}
+.flash-wrap{position:fixed;top:60px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px;max-width:calc(100vw - 40px)}
 .flash{padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;backdrop-filter:blur(12px);animation:flashIn .3s var(--ease)}
 .flash.success{background:rgba(50,215,75,.15);border:1px solid rgba(50,215,75,.3);color:var(--g)}
 .flash.info{background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.25);color:var(--c)}
@@ -119,29 +170,67 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
 .ft-copy span{color:var(--c2)}
 
 /* YT MODAL */
-.yt-modal{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.92);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.yt-modal{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.92);backdrop-filter:blur(24px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;padding:16px}
 .yt-modal.open{opacity:1;pointer-events:all}
-.yt-inner{width:min(900px,90vw);position:relative}
+.yt-inner{width:min(900px,100%);position:relative}
 .yt-wrap{position:relative;padding-top:56.25%;background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--bd2)}
 .yt-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
 .yt-close{position:absolute;top:-44px;right:0;background:none;border:1px solid rgba(255,255,255,.2);color:#fff;font-family:var(--f);font-size:13px;font-weight:500;padding:7px 18px;border-radius:980px;cursor:pointer;transition:background .2s}
 .yt-close:hover{background:rgba(255,255,255,.1)}
 
-
-
-
 /* BLINK */
 .blink{animation:blink 1.5s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
 
-@media(max-width:900px){
-  nav{padding:0 20px}
-  .sec{padding:70px 22px}
+/* ===================== TABLET ===================== */
+@media(max-width:1024px){
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .ft-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+
+/* ===================== MOBILE ===================== */
+@media(max-width:768px){
+  /* NAV */
+  nav{padding:0 16px;height:52px}
+  .nav-links{display:none}
+  .nav-cta{display:none}
+  .theme-btn{display:none}
+  .ham-btn{display:flex}
+  .mobile-menu{display:flex}
+
+  /* SECTIONS */
+  .sec{padding:60px 16px}
+  .sec-h{margin-bottom:28px}
+
+  /* GRIDS */
   .grid-3{grid-template-columns:1fr}
   .grid-2{grid-template-columns:1fr}
-  footer{padding:40px 22px 24px}
-  .ft-grid{grid-template-columns:1fr 1fr;gap:28px}
+
+  /* FILTER BAR — scrollable row */
+  .filter-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+  .filter-bar::-webkit-scrollbar{display:none}
+  .f-pill{flex-shrink:0}
+
+  /* CARDS */
+  .card-title{font-size:16px}
+  .card-body{padding:16px}
+
+  /* FOOTER */
+  footer{padding:40px 16px 24px}
+  .ft-grid{grid-template-columns:1fr;gap:28px}
+  .ft-brand p{max-width:100%}
   .ft-bottom{flex-direction:column;gap:8px;text-align:center}
+
+  /* BUTTONS */
+  .btn{font-size:14px;padding:11px 20px}
+
+  /* FLASH */
+  .flash-wrap{right:12px;left:12px;max-width:100%}
+}
+
+@media(max-width:400px){
+  .nav-logo{font-size:15px}
+  .sec{padding:48px 14px}
 }
 </style>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -176,10 +265,27 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
       <li><a href="{{ url_for('public.about') }}" class="{{ 'active' if request.endpoint=='public.about' }}">About</a></li>
       <li><a href="{{ url_for('public.contact') }}" class="{{ 'active' if request.endpoint=='public.contact' }}">Contact</a></li>
     </ul>
-    <button class="theme-btn" id="themeBtn"></button>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"></button>
     <a href="{{ url_for('public.contact') }}" class="nav-cta">Hire Me</a>
+    <!-- Hamburger (mobile only) -->
+    <button class="ham-btn" id="hamBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <a href="{{ url_for('public.index') }}" class="{{ 'active' if request.endpoint=='public.index' }}">Home</a>
+  <a href="{{ url_for('public.projects') }}" class="{{ 'active' if 'project' in request.endpoint }}">Projects</a>
+  <a href="{{ url_for('public.videos') }}" class="{{ 'active' if 'video' in request.endpoint }}">Videos</a>
+  <a href="{{ url_for('public.about') }}" class="{{ 'active' if request.endpoint=='public.about' }}">About</a>
+  <a href="{{ url_for('public.contact') }}" class="{{ 'active' if request.endpoint=='public.contact' }}">Contact</a>
+  <div class="mobile-menu-foot">
+    <button class="theme-btn" id="themeBtnMob" aria-label="Toggle theme"></button>
+    <a href="{{ url_for('public.contact') }}" class="mob-hire">Hire Me →</a>
+  </div>
+</div>
 
 <!-- YT MODAL (shared) -->
 <div class="yt-modal" id="ytModal">
@@ -193,20 +299,15 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
 
 <footer>
   <div class="ft-grid">
-
-    <!-- Brand column -->
     <div class="ft-brand">
       <div class="fl">Bibek<span>.</span>Bohara</div>
       <p>Full-Stack Developer & Video Editor. Building fast web experiences and crafting cinematic stories.</p>
-      <!-- Social links — replace # with your real URLs -->
       <div class="ft-socials">
         <a href="https://github.com/" class="ft-social" title="GitHub" target="_blank" rel="noopener">⌥</a>
         <a href="https://www.linkedin.com/in/bibek-bohara-16b920363/" class="ft-social" title="LinkedIn" target="_blank" rel="noopener">in</a>
         <a href="https://www.instagram.com/bibekbohara170/" class="ft-social" title="Instagram" target="_blank" rel="noopener">◉</a>
       </div>
     </div>
-
-    <!-- Work column -->
     <div class="ft-col">
       <h4>Work</h4>
       <ul>
@@ -216,8 +317,6 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
         <li><a href="{{ url_for('public.videos') }}?cat=cinematic">Cinematics</a></li>
       </ul>
     </div>
-
-    <!-- Pages column -->
     <div class="ft-col">
       <h4>Pages</h4>
       <ul>
@@ -228,54 +327,72 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bd2);padding:64px 
         <li><a href="{{ url_for('public.videos') }}">Videos</a></li>
       </ul>
     </div>
-
-    <!-- Contact column -->
     <div class="ft-col">
       <h4>Contact</h4>
       <ul>
-        <li><a href="bibekbohara170@gmail.com">bibekbohara170@gmail.com</a></li>
-<!--        <li><a href="{{ url_for('public.contact') }}">Send a Message</a></li>-->
-<!--        <li><a href="#" target="_blank" rel="noopener">Download CV</a></li>-->
+        <li><a href="mailto:bibekbohara170@gmail.com">bibekbohara170@gmail.com</a></li>
         <li><a href="{{ url_for('public.contact') }}" target="_blank" rel="noopener">Hire Me</a></li>
       </ul>
     </div>
-
   </div>
-
   <div class="ft-bottom">
-    <div class="ft-copy">© 2025 Bibek bohara. Coded & crafted with <span>♥</span> </div>
-    <div class="ft-copy" style="display:flex;gap:16px">
-<!--      <a href="#" style="font-size:12px;color:var(&#45;&#45;mu);text-decoration:none">Privacy</a>-->
-<!--      <a href="#" style="font-size:12px;color:var(&#45;&#45;mu);text-decoration:none">Terms</a>-->
-    </div>
+    <div class="ft-copy">© 2025 Bibek bohara. Coded & crafted with <span>♥</span></div>
+    <div class="ft-copy" style="display:flex;gap:16px"></div>
   </div>
 </footer>
 
 <script>
-// Theme — persists across all pages via localStorage
+// Theme toggle — syncs both desktop and mobile buttons
 var html=document.documentElement;
-document.getElementById('themeBtn').addEventListener('click',function(){
-  var next=html.getAttribute('data-theme')==='dark'?'light':'dark';
-  html.setAttribute('data-theme',next);
-  localStorage.setItem('theme',next);
-});
+function setTheme(next){html.setAttribute('data-theme',next);localStorage.setItem('theme',next)}
+document.getElementById('themeBtn').addEventListener('click',function(){setTheme(html.getAttribute('data-theme')==='dark'?'light':'dark')});
+var themeMob=document.getElementById('themeBtnMob');
+if(themeMob) themeMob.addEventListener('click',function(){setTheme(html.getAttribute('data-theme')==='dark'?'light':'dark')});
+
 // Nav sticky
 window.addEventListener('scroll',function(){
   document.getElementById('nav').classList.toggle('stuck',window.scrollY>40);
 });
+
+// Hamburger menu
+var hamBtn=document.getElementById('hamBtn');
+var mobileMenu=document.getElementById('mobileMenu');
+var menuOpen=false;
+function toggleMenu(force){
+  menuOpen = typeof force !== 'undefined' ? force : !menuOpen;
+  hamBtn.classList.toggle('open', menuOpen);
+  mobileMenu.classList.toggle('open', menuOpen);
+  hamBtn.setAttribute('aria-expanded', menuOpen);
+  mobileMenu.setAttribute('aria-hidden', !menuOpen);
+  document.body.style.overflow = menuOpen ? 'hidden' : '';
+}
+hamBtn.addEventListener('click',function(){toggleMenu()});
+// Close menu on link click
+mobileMenu.querySelectorAll('a').forEach(function(a){
+  a.addEventListener('click',function(){toggleMenu(false)});
+});
+// Close on outside tap
+document.addEventListener('click',function(e){
+  if(menuOpen && !mobileMenu.contains(e.target) && !hamBtn.contains(e.target)) toggleMenu(false);
+});
+
 // Reveal
 var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('vis')})},{threshold:.1});
 document.querySelectorAll('.rv').forEach(function(el){obs.observe(el)});
+
 // YT Modal
 var modal=document.getElementById('ytModal'),frame=document.getElementById('ytFrame');
 document.getElementById('ytClose').addEventListener('click',function(){modal.classList.remove('open');frame.src=''});
 modal.addEventListener('click',function(e){if(e.target===modal){modal.classList.remove('open');frame.src=''}});
 function openVideo(url){frame.src=url;modal.classList.add('open')}
-// Aurora parallax
-document.addEventListener('mousemove',function(e){
-  var x=(e.clientX/window.innerWidth-.5)*30,y=(e.clientY/window.innerHeight-.5)*30;
-  document.querySelectorAll('.ab').forEach(function(b,i){var f=(i+1)*.4;b.style.transform='translate('+(x*f)+'px,'+(y*f)+'px)'});
-});
+
+// Aurora parallax (skip on touch devices to save battery)
+if(window.matchMedia('(hover:hover)').matches){
+  document.addEventListener('mousemove',function(e){
+    var x=(e.clientX/window.innerWidth-.5)*30,y=(e.clientY/window.innerHeight-.5)*30;
+    document.querySelectorAll('.ab').forEach(function(b,i){var f=(i+1)*.4;b.style.transform='translate('+(x*f)+'px,'+(y*f)+'px)'});
+  });
+}
 {% block extra_js %}{% endblock %}
 </script>
 </body>
